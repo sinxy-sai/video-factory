@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>kid-phantom-pv shot-001</title>
+<script src="assets/gsap.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #07070A; }
+  * { box-sizing: border-box; }
+  [data-composition-id="shot-001"] {
+    position: relative; width: 100%; height: 100%; overflow: hidden;
+    background: #050507; color: #EDE7DA;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+  }
+  .scene { position: absolute; inset: 0; overflow: hidden; }
+  .frame { position: absolute; inset: 0; transform-origin: 52% 58%; }
+  .frame-snap { position: absolute; inset: 0; transform-origin: 62% 46%; }
+
+  /* ---------- night ---------- */
+  #bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 33% 30%, #1c2745 0%, #121a2f 20%, #0a0e1b 44%, #06070d 72%, #050507 100%);
+  }
+  #cloudBand {
+    position: absolute; left: -40px; top: 470px; width: 1180px; height: 300px;
+    background:
+      radial-gradient(ellipse 62% 46% at 42% 52%, rgba(16,20,38,0.92) 0%, rgba(16,20,38,0.55) 48%, rgba(16,20,38,0) 78%),
+      radial-gradient(ellipse 40% 30% at 74% 40%, rgba(16,20,38,0.75) 0%, rgba(16,20,38,0) 76%);
+    filter: blur(6px);
+  }
+  #stars { position: absolute; inset: 0; }
+  .star { position: absolute; display: block; border-radius: 50%; background: #EDE7DA; }
+  .mote { position: absolute; display: block; border-radius: 50%; background: #D4AF6A; }
+
+  #halo {
+    position: absolute; left: 640px; top: 320px; width: 1560px; height: 1560px;
+    margin: -780px 0 0 -780px;
+    background: radial-gradient(circle, rgba(237,231,218,0.20) 0%, rgba(237,231,218,0.09) 22%, rgba(212,175,106,0.045) 40%, rgba(237,231,218,0) 62%);
+    mix-blend-mode: screen;
+  }
+  #moon {
+    position: absolute; left: 640px; top: 320px; width: 620px; height: 620px;
+    margin: -310px 0 0 -310px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 38% 30%, #FFFFFF 0%, #FFFCEE 30%, #F6EEDC 58%, #E4D8BE 82%, #CBBC9E 100%);
+    box-shadow: 0 0 300px 40px rgba(237,231,218,0.22), 0 0 110px 10px rgba(237,231,218,0.26);
+    overflow: hidden;
+  }
+  #moonCraters {
+    position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(ellipse 36px 26px at 28% 60%, rgba(120,106,84,0.26) 0%, rgba(120,106,84,0.10) 62%, rgba(120,106,84,0) 100%),
+      radial-gradient(ellipse 24px 18px at 60% 26%, rgba(114,100,78,0.22) 0%, rgba(114,100,78,0.07) 60%, rgba(114,100,78,0) 100%),
+      radial-gradient(ellipse 50px 32px at 72% 66%, rgba(108,95,74,0.22) 0%, rgba(108,95,74,0.06) 60%, rgba(108,95,74,0) 100%),
+      radial-gradient(ellipse 18px 14px at 44% 82%, rgba(120,106,84,0.20) 0%, rgba(120,106,84,0) 100%),
+      radial-gradient(ellipse 28px 20px at 20% 32%, rgba(120,106,84,0.18) 0%, rgba(120,106,84,0) 100%);
+  }
+  #moonShade {
+    position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(circle at 80% 86%, rgba(5,5,7,0.72) 0%, rgba(5,5,7,0.22) 30%, rgba(5,5,7,0) 56%),
+      radial-gradient(circle at 20% 14%, rgba(255,255,255,0.46) 0%, rgba(255,255,255,0) 40%);
+  }
+  #moonDots {
+    position: absolute; inset: 0; border-radius: 50%;
+    background-image: radial-gradient(circle, rgba(84,70,48,0.55) 1.2px, rgba(84,70,48,0) 1.6px);
+    background-size: 6px 6px; opacity: 0.09; mix-blend-mode: multiply;
+  }
+  #moonRim {
+    position: absolute; left: 640px; top: 320px; width: 634px; height: 634px;
+    margin: -317px 0 0 -317px; border-radius: 50%;
+    border: 1.5px solid rgba(237,231,218,0.26);
+  }
+
+  /* ---------- searchlight (clip-path morph, stays inside the frame) ---------- */
+  #beamCone, #beamFlare { position: absolute; inset: 0; opacity: 0; }
+  #beamCone {
+    background: linear-gradient(238deg,
+      rgba(237,231,218,0) 24%, rgba(237,231,218,0.04) 36%,
+      rgba(255,252,242,0.22) 46%, rgba(237,231,218,0.04) 56%, rgba(237,231,218,0) 74%);
+    mix-blend-mode: screen;
+    filter: blur(26px);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.40) 62%, rgba(0,0,0,0) 96%);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.40) 62%, rgba(0,0,0,0) 96%);
+    clip-path: polygon(58% 0%, 88% 0%, 52% 100%, 16% 100%);
+  }
+  #beamFlare {
+    background: radial-gradient(circle 420px at 86% -2%, rgba(255,252,242,0.30) 0%, rgba(237,231,218,0.09) 46%, rgba(237,231,218,0) 76%);
+    mix-blend-mode: screen;
+  }
+
+  /* ---------- figure: low-angle bust, cropped by the frame ---------- */
+  #figure { position: absolute; left: 560px; top: 280px; width: 1000px; height: 900px; overflow: visible; }
+  .ink { fill: #050507; }
+  .rimSoft { fill: #EDE7DA; }
+  .fold { fill: none; stroke: #16161d; stroke-linecap: round; }
+  .edge { fill: none; stroke: #EDE7DA; stroke-linecap: round; }
+
+  /* ---------- foreground out-of-focus mass for depth ---------- */
+  #fgBlur {
+    position: absolute; left: -260px; bottom: -220px; width: 900px; height: 620px;
+    background: radial-gradient(ellipse 50% 52% at 38% 72%, rgba(3,3,5,0.98) 0%, rgba(3,3,5,0.72) 46%, rgba(3,3,5,0) 74%);
+    filter: blur(18px);
+  }
+
+  /* ---------- print texture ---------- */
+  #printHalftone {
+    position: absolute; inset: 0; opacity: 0.11; mix-blend-mode: overlay;
+    background-image:
+      radial-gradient(circle, rgba(237,231,218,0.85) 0.9px, rgba(237,231,218,0) 1.4px),
+      radial-gradient(circle, rgba(237,231,218,0.5) 1.4px, rgba(237,231,218,0) 2px);
+    background-size: 6px 6px, 13px 13px;
+    background-position: 0 0, 3px 4px;
+  }
+  #filmGrain { position: absolute; inset: 0; opacity: 0.24; mix-blend-mode: overlay; background-repeat: repeat; background-size: 256px 256px; }
+  #vignettePlate {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 62% 58% at 52% 44%, rgba(5,5,7,0) 26%, rgba(5,5,7,0.42) 66%, rgba(5,5,7,0.96) 100%),
+      linear-gradient(to bottom, rgba(5,5,7,0.66) 0%, rgba(5,5,7,0) 22%, rgba(5,5,7,0) 66%, rgba(5,5,7,0.82) 100%);
+  }
+
+  /* ---------- type layer above the grade ---------- */
+  .type-layer { position: absolute; inset: 0; z-index: 25; }
+  #ruleWrap { position: absolute; left: 132px; bottom: 162px; width: 680px; }
+  #ruleLine { display: block; width: 470px; height: 2px; background: linear-gradient(to right, #C81E3A 0%, #C81E3A 74%, rgba(200,30,58,0) 100%); transform-origin: 0% 50%; }
+  #ruleText {
+    display: block; margin-top: 22px; font-family: "Noto Serif SC", serif;
+    font-size: 26px; font-weight: 400; letter-spacing: 0.56em; color: #D4AF6A;
+  }
+  #timeMark {
+    position: absolute; right: 128px; top: 148px; font-family: "Cinzel", serif;
+    font-size: 21px; font-weight: 600; letter-spacing: 0.36em; color: rgba(237,231,218,0.68);
+  }
+
+  /* ---------- letterbox ---------- */
+  .bar { position: absolute; left: 0; width: 100%; height: 82px; background: #050507; z-index: 30; }
+  .bar-top { top: 0; box-shadow: 0 3px 16px rgba(5,5,7,0.95); }
+  .bar-bot { bottom: 0; box-shadow: 0 -3px 16px rgba(5,5,7,0.95); }
+</style>
+</head>
+<body>
+<div data-composition-id="shot-001" data-width="1920" data-height="1080" data-duration="5" data-start="0">
+  <div class="scene" data-layout-allow-overflow>
+    <div class="frame">
+      <div class="frame-snap">
+        <div id="bg"></div>
+        <div id="stars"></div>
+        <div id="cloudBand"></div>
+        <div id="halo"></div>
+        <div id="moon"><div id="moonCraters"></div><div id="moonShade"></div><div id="moonDots"></div></div>
+        <div id="moonRim"></div>
+        <div id="motes"></div>
+
+        <svg id="figure" viewBox="0 0 1000 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-layout-allow-overflow>
+          <defs>
+            <filter id="rimBlurWide" x="-45%" y="-45%" width="190%" height="190%">
+              <feGaussianBlur stdDeviation="24" />
+            </filter>
+            <filter id="rimBlurTight" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2.2" />
+            </filter>
+            <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#F4E3BA" />
+              <stop offset="52%" stop-color="#D4AF6A" />
+              <stop offset="100%" stop-color="#8A6C33" />
+            </linearGradient>
+            <linearGradient id="rimTint" x1="40" y1="160" x2="620" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FFFDF5" stop-opacity="0.95" />
+              <stop offset="38%" stop-color="#EDE7DA" stop-opacity="0.70" />
+              <stop offset="100%" stop-color="#EDE7DA" stop-opacity="0" />
+            </linearGradient>
+
+            <path id="pCapeL" d="M292 372 C200 400 118 470 76 556 C40 630 18 700 -46 764 L92 738 L48 816 L196 788 L152 874 L300 830 L300 372 Z" />
+            <path id="pCapeR" d="M600 372 C700 404 782 478 826 566 C862 636 886 704 948 768 L806 742 L852 820 L704 792 L750 878 L604 834 L604 372 Z" />
+            <path id="pBust" d="M430 316 C520 318 594 344 650 392 C716 450 754 546 772 650 L792 900 L92 900 L118 650 C136 546 174 450 238 392 C294 344 340 318 430 316 Z" />
+            <path id="pCollarL" d="M294 392 C284 330 310 296 352 290 L364 364 L326 402 Z" />
+            <path id="pCollarR" d="M566 392 C576 330 550 296 508 290 L496 364 L534 402 Z" />
+            <path id="pCrown" d="M328 178 L350 30 C396 14 466 14 512 30 L534 178 Z" />
+            <path id="eHead" d="M430 152 C492 158 536 200 542 264 C546 306 544 342 538 368 L516 394 L470 394 C468 372 460 352 446 342 C420 338 386 344 360 342 C352 336 348 328 350 320 C354 310 350 304 346 300 L316 288 C328 276 340 266 346 252 C338 238 340 226 352 214 C366 192 392 168 430 152 Z" />
+            <ellipse id="eBrim" cx="430" cy="180" rx="230" ry="28" transform="rotate(-4.5 430 180)" />
+            <path id="pTipL" d="M150 548 C120 604 92 650 52 690 L166 660 C192 622 208 586 214 546 Z" />
+            <path id="pTipR" d="M714 552 C744 608 774 654 816 694 L700 664 C674 626 658 590 652 550 Z" />
+          </defs>
+
+          <!-- moonlit edge: the same silhouette displaced into the light, so only the lit contour shows -->
+          <g id="rimLight">
+            <g filter="url(#rimBlurWide)" transform="translate(-34,-20)" opacity="0.26">
+              <use href="#pCapeL" fill="#EDE7DA" /><use href="#pCapeR" fill="#EDE7DA" />
+              <use href="#pBust" fill="#EDE7DA" /><use href="#pCollarL" fill="#EDE7DA" />
+              <use href="#pCollarR" fill="#EDE7DA" /><use href="#pTipL" fill="#EDE7DA" /><use href="#pTipR" fill="#EDE7DA" /><use href="#pCrown" fill="#EDE7DA" />
+              <use href="#eBrim" fill="#EDE7DA" /><use href="#eHead" fill="#EDE7DA" />
+            </g>
+            <g filter="url(#rimBlurTight)" transform="translate(-13,-8)" opacity="0.85">
+              <use href="#pCapeL" fill="url(#rimTint)" /><use href="#pCapeR" fill="url(#rimTint)" />
+              <use href="#pBust" fill="url(#rimTint)" /><use href="#pCollarL" fill="url(#rimTint)" />
+              <use href="#pCollarR" fill="url(#rimTint)" /><use href="#pTipL" fill="url(#rimTint)" /><use href="#pTipR" fill="url(#rimTint)" /><use href="#pCrown" fill="url(#rimTint)" />
+              <use href="#eBrim" fill="url(#rimTint)" /><use href="#eHead" fill="url(#rimTint)" />
+            </g>
+          </g>
+
+          <g id="figureBody">
+            <use href="#pCapeL" class="ink" />
+            <use href="#pCapeR" class="ink" />
+            <use href="#pBust" class="ink" />
+            <use href="#pTipL" class="ink" />
+            <use href="#pTipR" class="ink" />
+            <use href="#pCollarL" class="ink" />
+            <use href="#pCollarR" class="ink" />
+            <use href="#eHead" class="ink" />
+            <use href="#pCrown" class="ink" />
+            <use href="#eBrim" class="ink" />
+
+            <!-- fabric folds: barely lifted black so the cloth reads -->
+            <path class="fold" stroke-width="5" opacity="0.9" d="M330 540 C316 640 310 752 316 880" />
+            <path class="fold" stroke-width="4" opacity="0.8" d="M540 560 C560 660 566 770 560 890" />
+            <path class="fold" stroke-width="3.4" opacity="0.62" d="M210 580 C186 670 174 770 178 880" />
+            <path class="fold" stroke-width="3" opacity="0.55" d="M700 586 C722 676 732 772 728 880" />
+            <path class="fold" stroke-width="2.6" opacity="0.5" d="M150 656 C134 724 128 800 132 880" />
+
+            <!-- hat band -->
+            <rect x="332" y="130" width="198" height="24" fill="url(#goldGrad)" opacity="0.42" transform="rotate(-2 430 142)" />
+
+            <!-- monocle: lens, moonlit glint, chain, crimson catch-light -->
+            <g id="monocle">
+              <circle cx="452" cy="274" r="33" fill="rgba(237,231,218,0.10)" />
+              <circle cx="452" cy="274" r="33" fill="none" stroke="url(#goldGrad)" stroke-width="4.4" />
+              <path d="M431 259 C441 248 458 245 472 252" fill="none" stroke="#FFFDF5" stroke-width="3.4" stroke-linecap="round" opacity="0.92" />
+              <circle id="monocleGlint" cx="464" cy="287" r="4" fill="#C81E3A" opacity="0.95" />
+              <path d="M474 302 C508 352 542 402 580 448" fill="none" stroke="#D4AF6A" stroke-width="2" opacity="0.45" />
+            </g>
+          </g>
+        </svg>
+
+        <div id="fgBlur"></div>
+        <div id="beamCone"></div>
+        <div id="beamFlare"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="printHalftone" class="clip" data-start="0" data-duration="5" data-track-index="8"></div>
+  <div id="filmGrain" class="clip" data-start="0" data-duration="5" data-track-index="9"></div>
+  <div id="vignettePlate" class="clip" data-start="0" data-duration="5" data-track-index="10"></div>
+
+  <div class="type-layer">
+    <div id="ruleWrap">
+      <span id="ruleLine"></span>
+      <span id="ruleText">预告函</span>
+    </div>
+    <div id="timeMark">TEN PAST TWELVE</div>
+  </div>
+
+  <span class="bar bar-top"></span>
+  <span class="bar bar-bot"></span>
+</div>
+
+<script>
+(function () {
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var rng = mulberry32(20251028);
+
+  var stars = document.getElementById('stars');
+  var starFrag = document.createDocumentFragment();
+  var starOpacity = [];
+  for (var i = 0; i < 170; i++) {
+    var s = document.createElement('span');
+    s.className = 'star';
+    var size = 1 + rng() * 2.2;
+    var op = 0.14 + rng() * 0.58;
+    s.style.width = size.toFixed(2) + 'px';
+    s.style.height = size.toFixed(2) + 'px';
+    s.style.left = (rng() * 1920).toFixed(1) + 'px';
+    s.style.top = (rng() * 760).toFixed(1) + 'px';
+    s.style.opacity = '0';
+    starOpacity.push(op);
+    starFrag.appendChild(s);
+  }
+  stars.appendChild(starFrag);
+
+  var motes = document.getElementById('motes');
+  var moteFrag = document.createDocumentFragment();
+  var moteNodes = [];
+  for (var m = 0; m < 54; m++) {
+    var d = document.createElement('span');
+    d.className = 'mote';
+    var ms = 1.4 + rng() * 3.2;
+    d.style.width = ms.toFixed(2) + 'px';
+    d.style.height = ms.toFixed(2) + 'px';
+    d.style.left = (rng() * 1920).toFixed(1) + 'px';
+    d.style.top = (100 + rng() * 880).toFixed(1) + 'px';
+    d.style.opacity = (0.10 + rng() * 0.40).toFixed(2);
+    moteNodes.push({ node: d, drift: 40 + rng() * 90 });
+    moteFrag.appendChild(d);
+  }
+  motes.appendChild(moteFrag);
+
+  var tile = document.createElement('canvas');
+  tile.width = 256; tile.height = 256;
+  var ctx = tile.getContext('2d');
+  var img = ctx.createImageData(256, 256);
+  for (var p = 0; p < img.data.length; p += 4) {
+    var v = Math.floor(rng() * 255);
+    img.data[p] = v; img.data[p + 1] = v; img.data[p + 2] = v;
+    img.data[p + 3] = Math.floor(rng() * 105);
+  }
+  ctx.putImageData(img, 0, 0);
+  document.getElementById('filmGrain').style.backgroundImage = 'url(' + tile.toDataURL('image/png') + ')';
+
+  var tl = gsap.timeline({ paused: true });
+
+  tl.fromTo('#bg', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0);
+  tl.fromTo('#cloudBand', { opacity: 0, x: -60 }, { opacity: 0.95, x: 0, duration: 1.8, ease: 'power2.out' }, 0.4);
+  tl.fromTo('#halo', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1.5, ease: 'power2.out' }, 0.1);
+  tl.fromTo('#moon', { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 0.06);
+  tl.fromTo('#moonRim', { opacity: 0, scale: 1.2 }, { opacity: 0.8, scale: 1, duration: 1.15, ease: 'power3.out' }, 0.18);
+  tl.fromTo('.star', { opacity: 0 }, { opacity: starOpacity, duration: 0.9, ease: 'power1.out', stagger: 0.005 }, 0.16);
+
+  tl.fromTo('#figureBody', { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 1.3, ease: 'power3.out' }, 0.36);
+  tl.fromTo('#monocle', { opacity: 0, scale: 0.45, svgOrigin: '452 274' }, { opacity: 1, scale: 1, svgOrigin: '452 274', duration: 0.6, ease: 'back.out(2.6)' }, 1.5);
+  tl.fromTo('#monocleGlint', { opacity: 0, scale: 0.2, svgOrigin: '464 287' }, { opacity: 1, scale: 1, svgOrigin: '464 287', duration: 0.45, ease: 'power2.out' }, 2.15);
+  tl.fromTo('#rimLight', { opacity: 0.7 }, { opacity: 1, duration: 1.2, ease: 'power2.out' }, 0.5);
+  tl.to('#rimLight', { opacity: 1.35, duration: 0.5, ease: 'sine.in' }, 1.75);
+  tl.to('#rimLight', { opacity: 1, duration: 1.1, ease: 'sine.out' }, 2.95);
+
+  tl.fromTo('#pCapeL', { rotate: 0 }, { rotate: 1.3, svgOrigin: '430 330', duration: 2.4, ease: 'sine.inOut', repeat: 1, yoyo: true }, 0.7);
+  tl.fromTo('#pCapeR', { rotate: 0 }, { rotate: -1.1, svgOrigin: '430 330', duration: 2.6, ease: 'sine.inOut', repeat: 1, yoyo: true }, 0.7);
+
+  tl.fromTo('#beamCone', { opacity: 0, clipPath: 'polygon(62% 0%, 92% 0%, 58% 100%, 24% 100%)' }, { opacity: 1, duration: 0.45, ease: 'power1.out' }, 0.9);
+  tl.to('#beamCone', { clipPath: 'polygon(18% 0%, 48% 0%, 6% 100%, -28% 100%)', duration: 2.4, ease: 'power1.inOut' }, 1.35);
+  tl.fromTo('#beamFlare', { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'sine.out' }, 0.9);
+  tl.to('#beamFlare', { opacity: 0.35, duration: 1.2, ease: 'sine.inOut' }, 2.5);
+
+  for (var k = 0; k < moteNodes.length; k++) {
+    tl.fromTo(moteNodes[k].node, { y: 0, opacity: 0 }, { y: -moteNodes[k].drift, opacity: 0.45, duration: 4.9, ease: 'none' }, 0.08 + (k % 7) * 0.05);
+  }
+
+  tl.fromTo('.frame', { scale: 1 }, { scale: 1.07, duration: 5, ease: 'none' }, 0);
+  tl.fromTo('.frame-snap', { scale: 1 }, { scale: 1.05, duration: 0.24, ease: 'power4.out' }, 3.0);
+
+  tl.fromTo('#ruleLine', { scaleX: 0 }, { scaleX: 1, duration: 0.85, ease: 'power3.inOut' }, 3.0);
+  tl.fromTo('#ruleText', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 3.42);
+  tl.fromTo('#timeMark', { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0.9);
+
+  for (var g = 0; g < 60; g++) {
+    var gx = Math.floor(rng() * 256);
+    var gy = Math.floor(rng() * 256);
+    tl.set('#filmGrain', { backgroundPosition: gx + 'px ' + gy + 'px' }, g * 0.083);
+  }
+
+  window.__timelines['shot-001'] = tl;
+})();
+</script>
+</div>
+</body>
+</html>

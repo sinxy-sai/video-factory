@@ -5,6 +5,7 @@ import type {EpisodeManifest} from '../../content/schema';
 import {SceneFrame} from '../components/SceneFrame';
 import {SceneRenderer} from '../scenes/SceneRenderer';
 import {CaptionLayer} from '../components/CaptionLayer';
+import {CinematicOverlay} from '../components/CinematicOverlay';
 import '../styles.css';
 
 export const ScienceVideo: React.FC<{manifest?: EpisodeManifest | null}> = ({manifest}) => {
@@ -34,6 +35,7 @@ const SceneContent: React.FC<{
   return (
     <SceneFrame>
       <SceneRenderer episodeId={episodeId} scene={scene} />
+      <CinematicOverlay />
       <CaptionLayer scene={scene} />
     </SceneFrame>
   );

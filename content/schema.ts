@@ -25,6 +25,24 @@ export const captionSchema = z.object({
 });
 export type Caption = z.infer<typeof captionSchema>;
 
+/**
+ * How much caption coverage a scene needs.
+ *
+ * - `required` (default): captions must cover at least 80% of the scene.
+ * - `optional`: captions are allowed but no minimum coverage is enforced.
+ * - `none`: the scene is caption-free (for example a cinematic PV or title card).
+ *
+ * The field stays optional so existing manifests keep working; resolve it with
+ * `resolveCaptionMode` instead of reading `scene.captionMode` directly.
+ */
+export const captionModeSchema = z.enum(['required', 'optional', 'none']);
+export type CaptionMode = z.infer<typeof captionModeSchema>;
+export const DEFAULT_CAPTION_MODE: CaptionMode = 'required';
+
+export function resolveCaptionMode(scene: {captionMode?: CaptionMode}): CaptionMode {
+  return scene.captionMode ?? DEFAULT_CAPTION_MODE;
+}
+
 export const shotAssetReferenceSchema = z.object({
   path: z.string().min(1),
   kind: z.enum(['mp4', 'webm', 'frame-sequence']),
@@ -50,6 +68,7 @@ export const sceneSchema = z
     durationInFrames: z.number().int().positive(),
     beats: z.array(sceneBeatSchema).min(1),
     captions: z.array(captionSchema).default([]),
+    captionMode: captionModeSchema.optional(),
     supportingText: z.string().min(1).optional(),
     accent: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     shotAsset: shotAssetReferenceSchema.optional(),
@@ -112,6 +131,14 @@ export const sceneSchema = z
       }
       captionIds.add(caption.id);
       previousCaptionEnd = Math.max(previousCaptionEnd, captionEnd);
+    }
+
+    if (resolveCaptionMode(scene) === 'none' && scene.captions.length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['captions'],
+        message: 'captionMode none requires an empty captions array',
+      });
     }
   });
 

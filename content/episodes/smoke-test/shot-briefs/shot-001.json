@@ -1,0 +1,62 @@
+{
+  "id": "shot-001",
+  "sceneId": "pipeline-check",
+  "title": "管线自检",
+  "narration": "这支片子只由帧时间驱动，任何一帧都能重跑复现。",
+  "visual": "pipeline-check",
+  "renderer": "browser",
+  "visualStyle": "episode-defined",
+  "visualDirection": {
+    "composition": "非对称三分：左三分之一为排版栏并配左栏 scrim，右侧三分之二为轨道仪器系统，顶部方位标尺横贯全宽，四角定位角把画面钉成一块仪器面板",
+    "focalPoint": "左侧 240px 的 1:1 巨型比值与右侧行星在视线上的夹角",
+    "hierarchy": [
+      "1:1 巨型比值",
+      "中文单位「帧对帧复现」与拉丁注记 FRAME-EXACT",
+      "行星与四层轨道系统",
+      "遥测三行与顶部方位标尺",
+      "颗粒、扫描线、浮尘"
+    ],
+    "palette": "#04070E 画布底 / #07101C 大气 / #EAF2FA 主文字 / #A9BFD2 次级 / #7E93AA 注释 / #5FE3D0 青色测量光 / #F2A65A 琥珀时钟色 / #8E7CFF 紫色参考轨道",
+    "typography": "Cormorant Garamond 500 240px 巨型比值，JetBrains Mono 500 19px eyebrow、16-17px 遥测，Noto Sans SC 500 27px 单位标签",
+    "texture": "feTurbulence 静帧颗粒 7.5%、4px 扫描线 16%、径向暗角、96px 经纬网格、48 颗种子星与 3 处十字星芒"
+  },
+  "motion": {
+    "entrance": "0.0-1.1 s：大气、星场、经纬网格、轨道系统与左栏排版依次显影，环弧以 stroke-dashoffset 绘出",
+    "transformation": "1.1-3.6 s 卫星沿椭圆轨道绕行一整圈（64 段线性 tween，可任意 seek），1.9-2.9 s 一道扫描光带横穿仪器视场",
+    "exit": "4.6-5.0 s 收尾到定版，淡出接黑",
+    "transition": "fade-through-black",
+    "pacing": "measured"
+  },
+  "durationInFrames": 150,
+  "continuity": {
+    "leaves": [
+      "orbit-system",
+      "hero-ratio",
+      "instrument-frame"
+    ],
+    "inherits": []
+  },
+  "implementation": {
+    "sourceRoot": "html/shot-001",
+    "output": {
+      "kind": "mp4",
+      "path": "renders/smoke-test/shots/shot-001.mp4",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30
+    },
+    "composition": "asset",
+    "visualMode": "html",
+    "files": [
+      "html/shot-001/index.html"
+    ]
+  },
+  "qualityChecks": {
+    "lint": true,
+    "validate": true,
+    "inspect": true,
+    "animationMap": true,
+    "strict": true
+  },
+  "assets": []
+}

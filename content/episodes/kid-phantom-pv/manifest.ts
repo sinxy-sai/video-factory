@@ -1,0 +1,76 @@
+import type {EpisodeManifest} from '../../schema';
+import {LANDSCAPE_PRESET} from '../../presets';
+
+export const manifest: EpisodeManifest = {
+  id: 'kid-phantom-pv',
+  title: '怪盗月夜 · PHANTOM THIEF',
+  language: 'zh-CN',
+  ...LANDSCAPE_PRESET,
+  theme: 'moonlit-noir',
+  scenes: [
+    {
+      id: 'moon-arrival',
+      title: '月轮与剪影',
+      claim: '圆月之下，礼帽披风的剪影被探照灯点亮。',
+      visual: 'moon-arrival',
+      captionMode: 'none',
+      captions: [],
+      durationInFrames: 144,
+      beats: [
+        {id: 'enter', purpose: 'enter', startFrame: 0, durationInFrames: 24},
+        {id: 'reveal', purpose: 'focus', startFrame: 24, durationInFrames: 72},
+        {id: 'sweep', purpose: 'process', startFrame: 96, durationInFrames: 30},
+        {id: 'resolve', purpose: 'resolve', startFrame: 126, durationInFrames: 18},
+      ],
+      supportingText: '月光、剪影、探照灯与预告函细线。',
+    },
+    {
+      id: 'card-burst',
+      title: '牌雨与落名',
+      claim: '扑克牌从中心炸开，巨型字砸进画面。',
+      visual: 'card-burst',
+      captionMode: 'none',
+      captions: [],
+      durationInFrames: 162,
+      beats: [
+        {id: 'enter', purpose: 'enter', startFrame: 0, durationInFrames: 24},
+        {id: 'burst', purpose: 'process', startFrame: 24, durationInFrames: 54},
+        {id: 'stamp', purpose: 'focus', startFrame: 78, durationInFrames: 48},
+        {id: 'resolve', purpose: 'resolve', startFrame: 126, durationInFrames: 36},
+      ],
+      supportingText: '牌面爆发、烟雾翻涌、字距收紧。',
+    },
+    {
+      id: 'monocle-thread',
+      title: '单片眼镜与红线',
+      claim: '镜片里的虹膜收缩，红色细线贯穿金环。',
+      visual: 'monocle-thread',
+      captionMode: 'none',
+      captions: [],
+      durationInFrames: 126,
+      beats: [
+        {id: 'enter', purpose: 'enter', startFrame: 0, durationInFrames: 18},
+        {id: 'iris', purpose: 'focus', startFrame: 18, durationInFrames: 42},
+        {id: 'threads', purpose: 'process', startFrame: 60, durationInFrames: 42},
+        {id: 'resolve', purpose: 'resolve', startFrame: 102, durationInFrames: 24},
+      ],
+      supportingText: '金环、虹膜、五条预告函细线。',
+    },
+    {
+      id: 'crimson-seal',
+      title: '绯红落版',
+      claim: '披风掠过，绯红 end card 落款。',
+      visual: 'crimson-seal',
+      captionMode: 'none',
+      captions: [],
+      durationInFrames: 168,
+      beats: [
+        {id: 'enter', purpose: 'transition', startFrame: 0, durationInFrames: 36},
+        {id: 'stamp', purpose: 'enter', startFrame: 36, durationInFrames: 54},
+        {id: 'seal', purpose: 'focus', startFrame: 90, durationInFrames: 48},
+        {id: 'resolve', purpose: 'resolve', startFrame: 138, durationInFrames: 30},
+      ],
+      supportingText: 'PHANTOM THIEF 与中文落版。',
+    },
+  ],
+};

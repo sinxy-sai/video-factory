@@ -1,0 +1,65 @@
+{
+    "id":  "shot-002",
+    "sceneId":  "card-burst",
+    "title":  "牌雨与落名",
+    "narration":  "白闪落黑，扑克牌从中心爆散，巨型字砸进画面。",
+    "visual":  "card-burst",
+    "renderer":  "browser",
+    "visualStyle":  "episode-defined",
+    "visualDirection":  {
+                            "composition":  "中心对撞后接巨型字压图：牌面以放射状散开，骨白大字压在画面下三分之一",
+                            "focalPoint":  "巨型拉丁大写的字怀与穿过它的红桃牌",
+                            "hierarchy":  [
+                                              "巨型展示字",
+                                              "爆散扑克牌与烟雾",
+                                              "绯红长线与小标签",
+                                              "颗粒与暗角"
+                                          ],
+                            "palette":  "#07070A 底 / #EDE7DA 字与牌面 / #C81E3A 红桃与长线 / #D4AF6A 牌角与暗金小字",
+                            "typography":  "Cinzel 900 巨型 320px 主字，Cinzel 600 字距 0.5em 的副行标签",
+                            "texture":  "网点覆盖在烟雾上、22% 颗粒、中心亮暗角"
+                        },
+    "motion":  {
+                   "entrance":  "6 帧骨白白闪落黑",
+                   "transformation":  "牌面从中心以不同角度飞出并自转，巨型字由 1.45 倍缩入且字距收紧",
+                   "exit":  "字与牌压暗，硬切进入镜片特写",
+                   "transition":  "hard-cut",
+                   "pacing":  "explosive"
+               },
+    "durationInFrames":  162,
+    "continuity":  {
+                       "leaves":  [
+                                      "card-burst",
+                                      "title-kid",
+                                      "crimson-line"
+                                  ],
+                       "inherits":  [
+                                        "night-sky"
+                                    ]
+                   },
+    "implementation":  {
+                           "sourceRoot":  "html/shot-002",
+                           "output":  {
+                                          "kind":  "mp4",
+                                          "path":  "renders/kid-phantom-pv/shots/shot-002.mp4",
+                                          "width":  1920,
+                                          "height":  1080,
+                                          "fps":  30
+                                      },
+                           "composition":  "asset",
+                           "visualMode":  "html",
+                           "files":  [
+                                         "html/shot-002/index.html"
+                                     ]
+                       },
+    "qualityChecks":  {
+                          "lint":  true,
+                          "validate":  true,
+                          "inspect":  true,
+                          "animationMap":  true,
+                          "strict":  true
+                      },
+    "assets":  [
+
+               ]
+}

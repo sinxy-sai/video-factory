@@ -3,7 +3,9 @@ node_modules/
 renders/
 static/
 dist/
+.tmp/
 *.local
 .venv/
 tools/ffmpeg/
 .superpowers/
+.hyperframes/
