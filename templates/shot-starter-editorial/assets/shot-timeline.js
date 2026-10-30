@@ -179,20 +179,20 @@
     from('#gutter', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 0.16, 0.95, 'power2.inOut');
 
     /* 左栏排版：页眉 → 大标题 → 引文 → 正文，逐级上浮 */
-    from('.type__head', {y: 10, opacity: 0}, {y: 0, opacity: 1}, 0.42, 0.50);
-    from('.type__rule', {scaleX: 0, opacity: 0}, {scaleX: 1, opacity: 1}, 0.52, 0.50);
-    from('.type__title', {y: 26, opacity: 0}, {y: 0, opacity: 1}, 0.58, 0.80, 'power4.out');
-    from('.type__quote', {y: 16, opacity: 0}, {y: 0, opacity: 1}, 0.78, 0.60);
-    tl.fromTo('.type__body', {y: 14, opacity: 0}, {y: 0, opacity: 1, duration: 0.50, stagger: 0.09, ease: 'power3.out'}, 0.92);
+    from('.type__head', {y: 10, opacity: 0}, {y: 0, opacity: 1}, 0.04, 0.34);
+    from('.type__rule', {scaleX: 0, opacity: 0}, {scaleX: 1, opacity: 1}, 0.08, 0.36);
+    from('.type__title', {y: 26, opacity: 0}, {y: 0, opacity: 1}, 0.10, 0.46, 'power4.out');
+    from('.type__quote', {y: 16, opacity: 0}, {y: 0, opacity: 1}, 0.28, 0.46);
+    tl.fromTo('.type__body', {y: 14, opacity: 0}, {y: 0, opacity: 1, duration: 0.50, stagger: 0.09, ease: 'power3.out'}, 0.42);
 
     /* 前景纸片：从右下画外落定，随后极缓上浮 */
     from('#chip-move', {x: 44, y: 22, opacity: 0}, {x: 0, y: 0, opacity: 1}, 0.55, 1.10, 'power3.out');
     from('#tooth-tex', {opacity: 0}, {opacity: .30}, 0.30, 1.20, 'power1.out');
 
     /* 线刻 1.20–3.20：轮廓 → 叶柄 → 主脉 → 分叉 → 末梢 → 剖面 */
-    from('#leaf-a', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 1.20, 1.05, 'power2.inOut');
-    from('.leaf-inner', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 1.32, 1.05, 'power2.inOut');
-    from('.stem', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 1.34, 0.55, 'power2.inOut');
+    from('#leaf-a', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 0.78, 1.05, 'power2.inOut');
+    from('.leaf-inner', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 0.90, 1.05, 'power2.inOut');
+    from('.stem', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 0.94, 0.55, 'power2.inOut');
     tl.fromTo('.v-main', {attr: {'stroke-dashoffset': 1}},
       {attr: {'stroke-dashoffset': 0}, duration: 0.55, stagger: {each: 0.055, from: 'center'}, ease: 'power2.inOut'}, 1.42);
     tl.fromTo('.v-fork', {attr: {'stroke-dashoffset': 1}},
@@ -207,6 +207,7 @@
     from('#ld-b', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 2.90, 0.40, 'power2.inOut');
     from('#ld-c', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 3.00, 0.40, 'power2.inOut');
     from('#scalebar', {opacity: 0}, {opacity: 1}, 2.68, 0.45, 'power2.out');
+    from('#scale-label', {opacity: 0}, {opacity: 1}, 2.68, 0.45, 'power2.out');
 
     /* 朱批 3.00–4.40：圈注分叉 + 标题下划线 + 图注编号 + 图例 */
     from('#mark-circle', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}}, 3.00, 0.85, 'power2.inOut');

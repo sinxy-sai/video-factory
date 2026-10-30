@@ -181,12 +181,12 @@
     from('.cl-a', {opacity: 0}, {opacity: 1}, 0.80, 0.50, 'power1.out');
 
     /* 左栏排版：eyebrow → 标题 → 分隔 → hero → 单位 → 终端 → 注释 */
-    from('.t-eyebrow', {y: 14, opacity: 0}, {y: 0, opacity: 1}, 0.55, 0.50, 'power3.out');
-    from('.t-title', {y: 22, opacity: 0, scale: 0.985}, {y: 0, opacity: 1, scale: 1}, 0.62, 0.70, 'power4.out');
-    from('.t-rule', {scaleX: 0, opacity: 0}, {scaleX: 1, opacity: 1}, 0.72, 0.50, 'power3.out');
-    from('.t-hero', {y: 34, opacity: 0}, {y: 0, opacity: 1}, 0.78, 0.85, 'power4.out');
-    from('.t-unit', {y: 16, opacity: 0}, {y: 0, opacity: 1}, 1.02, 0.60, 'power3.out');
-    from('.t-unit-en', {x: -10, opacity: 0}, {x: 0, opacity: 0.72}, 1.14, 0.60, 'power3.out');
+    from('.t-eyebrow', {y: 14, opacity: 0}, {y: 0, opacity: 1}, 0.06, 0.36, 'power3.out');
+    from('.t-title', {y: 22, opacity: 0, scale: 0.985}, {y: 0, opacity: 1, scale: 1}, 0.10, 0.48, 'power4.out');
+    from('.t-rule', {scaleX: 0, opacity: 0}, {scaleX: 1, opacity: 1}, 0.20, 0.42, 'power3.out');
+    from('.t-hero', {y: 34, opacity: 0}, {y: 0, opacity: 1}, 0.24, 0.70, 'power4.out');
+    from('.t-unit', {y: 16, opacity: 0}, {y: 0, opacity: 1}, 0.52, 0.55, 'power3.out');
+    from('.t-unit-en', {x: -10, opacity: 0}, {x: 0, opacity: 0.72}, 0.62, 0.55, 'power3.out');
     from('.t-note', {y: 12, opacity: 0}, {y: 0, opacity: 1}, 2.20, 0.55, 'power3.out');
 
     /* 右栏 HUD：表头 → 横规 → 刻度梯 → 四行参数 → 状态 */
@@ -207,6 +207,7 @@
     tl.fromTo('#frame-marks path', {attr: {'stroke-dashoffset': 1}}, {attr: {'stroke-dashoffset': 0}, duration: 0.40, stagger: 0.06, ease: 'power2.inOut'}, 0.30);
 
     /* ══ 终端逐行打字：每行 12–14 字 × 0.026s ≈ 8 帧 ══ */
+    tl.fromTo('.t-p', {opacity: 0}, {opacity: 1, duration: 0.01, stagger: 0.50, ease: 'steps(1)'}, BEAT.term);
     ['.t-line--1', '.t-line--2', '.t-line--3'].forEach(function (sel, i) {
       var chars = document.querySelectorAll(sel + ' .t-txt span');
       tl.fromTo(chars, {opacity: 0}, {opacity: 1, duration: 0.012, stagger: 0.026, ease: 'none'}, BEAT.term + i * 0.50);
