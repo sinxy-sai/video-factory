@@ -132,6 +132,8 @@ npx hyperframes check content/episodes/<id>/html/<shot-id> --strict
 # 2) 模板级（改模板后）
 npx hyperframes check templates/shot-starter --strict
 npx hyperframes check templates/shot-starter-noir --strict
+npx hyperframes check templates/shot-starter-editorial --strict
+npx hyperframes check templates/shot-starter-neon --strict
 
 # 3) 路由与分镜一致性（browser / manim / layered）
 npm run validate-episode-shots -- <id>

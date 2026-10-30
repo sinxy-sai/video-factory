@@ -27,7 +27,12 @@ AI 原生工作流与视觉体系升级：从「能渲染」到「能做出有�
 
 ### Added
 
+- `templates/shot-starter-editorial/`（美术系统 C 纸本编辑 / 博物馆）与 `templates/shot-starter-neon/`（美术系统 D 霓虹东京 / 科技）：补齐四套命名美术系统的可复制 HyperFrames 镜头骨架，均通过 `npx hyperframes check --strict`。
 - Open source contribution, security, conduct, and release workflows.
+
+### Changed
+
+- 上游仓库更名为 `sinxy-sai/video-factory`：README clone 命令、`package.json` 的 `repository` / `bugs` / `homepage` 链接同步到新地址。
 
 ## [0.1.0-alpha.4]
 

@@ -5,12 +5,12 @@
   "description": "Manifest-driven science explainer videos with HyperFrames, Manim, Remotion, and FFmpeg.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sinxy-sai/science-video-factory.git"
+    "url": "https://github.com/sinxy-sai/video-factory.git"
   },
   "bugs": {
-    "url": "https://github.com/sinxy-sai/science-video-factory/issues"
+    "url": "https://github.com/sinxy-sai/video-factory/issues"
   },
-  "homepage": "https://github.com/sinxy-sai/science-video-factory#readme",
+  "homepage": "https://github.com/sinxy-sai/video-factory#readme",
   "engines": {
     "node": ">=20"
   },

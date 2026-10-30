@@ -7,7 +7,7 @@
 1. 在「四套命名美术系统」里选一套（A/B/C/D），把色板与字号阶写进 `visual-style.md`。
 2. 在「十二种构图原型」里选一个作为该镜的骨架，不要自创"标题 + 图表"版式。
 3. 从「参考图拆解」把参考片拆成 layers / 光 / 字 / 动效，落到具体令牌。
-4. 用 `templates/shot-starter`（A）或 `templates/shot-starter-noir`（B）起步，按模板 `DESIGN.md` 改造。
+4. 用对应系统的模板起步——`templates/shot-starter`（A）、`templates/shot-starter-noir`（B）、`templates/shot-starter-editorial`（C）、`templates/shot-starter-neon`（D）——按模板 `DESIGN.md` 改造。
 5. 交片前过 `docs/QUALITY.md` 的三点截图与校验清单。
 
 ---
@@ -196,7 +196,7 @@ background: radial-gradient(78% 72% at 50% 46%, rgba(120,96,60,0) 58%, rgba(120,
 
 镜头语言：横向平移（像翻页，12–24px/s）、纸片层叠错位（每层 8–14px 偏移）、朱批划线与圈注（0.5–0.8s 画出）、轻微 1.5% 整体推近。**禁止**霓虹、辉光、故障效果。
 
-适配：历史、生物分类、地理、艺术、文献解读、名词解释。反例：赛博/科技、快节奏 PV。
+适配：历史、生物分类、地理、艺术、文献解读、名词解释。反例：赛博/科技、快节奏 PV。模板：`templates/shot-starter-editorial`。
 
 ### 系统 D｜霓虹东京 / 科技（Neon Tokyo / Tech）
 
@@ -240,7 +240,7 @@ background: repeating-linear-gradient(180deg, rgba(242,245,255,.06) 0 1px, trans
 
 镜头语言：whip pan（位移 600–900px，0.25s）、果冻抖动（≤2px，2–3 帧）、glitch 切（3–4 帧 RGB 分离）、HUD 逐行打字（每行 6–10 帧）、缩放冲击（从 1.06 收到 1.00，2 帧）。**禁止**长时间高频闪烁（>3Hz 会引起不适）。
 
-适配：芯片、AI、网络、城市数据、代码。反例：需要安静阅读的长解释镜头。
+适配：芯片、AI、网络、城市数据、代码。反例：需要安静阅读的长解释镜头。模板：`templates/shot-starter-neon`。
 
 ---
 
@@ -414,7 +414,7 @@ background: repeating-linear-gradient(180deg, rgba(242,245,255,.06) 0 1px, trans
 
 ## 9. 交付衔接
 
-- 模板：`templates/shot-starter`（系统 A）、`templates/shot-starter-noir`（系统 B）；复制 → 改标签/令牌/几何 → `npx hyperframes check <dir> --strict`。
+- 模板：`templates/shot-starter`（系统 A）、`templates/shot-starter-noir`（系统 B）、`templates/shot-starter-editorial`（系统 C）、`templates/shot-starter-neon`（系统 D）；复制 → 改标签/令牌/几何 → `npx hyperframes check <dir> --strict`。
 - 镜头 HTML 禁止出现标题、镜号、整句 caption；只保留读懂关系所需的短标签（≤8 汉字或 ≤14 字符）。
 - 质量检查：`docs/QUALITY.md` 的三点截图 + 校验清单。
 - 任何"临时凑合"的视觉决策（例如用纯色块代替粒子场）都要在 `shots.md` 或 `visual-style.md` 里写明原因，避免下一镜继续复制。

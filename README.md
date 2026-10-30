@@ -31,8 +31,8 @@ Science Video Factory 把「浏览器镜头 + 代码动画 + 总合成 + 字幕 
 环境要求：Node.js ≥ 20（仓库在 Node 24 / Windows 上验证），首次渲染会自动下载 Remotion 的 Chrome Headless Shell。
 
 ```powershell
-git clone https://github.com/sinxy-sai/science-video-factory.git
-cd science-video-factory
+git clone https://github.com/sinxy-sai/video-factory.git
+cd video-factory
 
 npm install
 npm run doctor          # 依赖体检：本地 .venv / tools/ffmpeg / Chrome
@@ -107,7 +107,7 @@ AI 会自动走完：**创意简报 → 3 个概念方向 → hero frame（静�
 过去「模型画出来的东西很平庸」的根因不是技术栈，而是缺少美术指导和质量门禁。本版补上三层：
 
 - **美术方向**：`docs/ART_DIRECTION.md`（本版新增）提供 4 套命名美术系统（深空天文台 / 月夜怪盗 / 纸本编辑 / 霓虹东京），每套有精确色板、1080p 字号阶、网格与安全区、材质颗粒配方、镜头语言，以及 12 种构图原型和「反 PPT 清单」。
-- **镜头模板**：`templates/shot-starter/`（深空天文台）与 `templates/shot-starter-noir/`（月夜怪盗）（本版新增）是可复制的 HyperFrames 镜头骨架，自带多层背景、字体系统、GSAP seekable timeline、`window.__timelines` 注册，并且已通过 `npx hyperframes check --strict`。
+- **镜头模板**：`templates/shot-starter/`（深空天文台）、`templates/shot-starter-noir/`（月夜怪盗）、`templates/shot-starter-editorial/`（纸本编辑 / 博物馆）与 `templates/shot-starter-neon/`（霓虹东京 / 科技）是可复制的 HyperFrames 镜头骨架，自带多层背景、字体系统、GSAP seekable timeline、`window.__timelines` 注册，并且已通过 `npx hyperframes check --strict`。
 - **质量门禁**：`docs/QUALITY.md`（本版新增）给出「三点截图法」（首帧/中段/尾帧）和分门别类的镜头 QC 清单；所有 browser 镜头过 `npx hyperframes check --strict`，整集过 `validate-episode`（ShotBrief/manifest/连续性/字幕覆盖/文字归属），最后用 contact sheet 与三点截图复核。
 
 硬规则（会被校验强制）：标题、镜号、完整字幕不得画进镜头；旁白/字幕/未来配音共用同一 scene-relative 帧轴；渲染必须确定性可复现；`render-episode` 只接受 `--scale 1`，输出固定为 `renders/<id>/final.mp4`。
@@ -137,7 +137,7 @@ production/                # 渲染路由、镜头契约、图层合成、视觉
 docs/                      # WORKFLOW / SCENE_GUIDE / COMPONENT_GUIDE / ART_DIRECTION / QUALITY
 skills/science-video-workflow/SKILL.md   # 生产 playbook 规范源
 .agents/.claude/.codex/    # 三个 harness 的同步副本（内容必须一致）
-templates/                 # 镜头骨架模板（本版新增）
+templates/                 # 四套美术系统镜头骨架 A/B/C/D（shot-starter{,-noir,-editorial,-neon}）
 renders/<id>/              # final.mp4 + final.manifest.json + 镜头资产 + 接触表
 static/episodes/<id>/      # 由脚本生成的 Remotion 运行时静态资源
 tools/ffmpeg/              # 项目内 FFmpeg / FFprobe
