@@ -1,0 +1,219 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>shot-starter-noir — System B · Moonlit Phantom / Film Noir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet">
+<style>
+  /* ── 设计令牌：改镜头先改这里 ───────────────────────────────── */
+  :root {
+    --noir-0: #05060A;   /* 画布底 */
+    --noir-1: #0A0D14;   /* 夜雾 */
+    --noir-2: #141924;   /* 剪影面 */
+    --bone: #F4F0E6;     /* 主文字 / 卡片 */
+    --silver: #C3CDDA;   /* 次文字 */
+    --slate: #8794A6;    /* 注释（≥4.5:1） */
+    --moon: #DCE9F5;     /* 月光 */
+    --amber: #E8A24C;    /* 街灯 */
+    --crimson: #C2453E;  /* 封印红 */
+    --font-display: "Cormorant Garamond", "Noto Serif SC", serif;
+    --font-serif: "Noto Serif SC", serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: var(--noir-0); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--noir-0); color: var(--bone); }
+  .clip { position: absolute; inset: 0; }
+
+  /* L0 夜空：冷月辉光 + 地平线暖雾 + 左栏压暗 */
+  #sky { z-index: 0; }
+  #sky .sky__base { position: absolute; inset: 0; display: block;
+    background: radial-gradient(70% 62% at 80% 24%, #1A2432 0%, #0C1119 44%, #05060A 84%),
+                linear-gradient(178deg, #0B1018 0%, #05060A 62%, #080A0F 100%); }
+  #sky .sky__moonhaze { position: absolute; display: block; left: 940px; top: -320px; width: 1200px; height: 1200px;
+    background: radial-gradient(closest-side, rgba(220,233,245,.16) 0%, rgba(160,183,205,.05) 44%, rgba(5,6,10,0) 76%);
+    filter: blur(14px); }
+  #sky .sky__warm { position: absolute; display: block; left: 360px; top: 720px; width: 1100px; height: 520px;
+    background: radial-gradient(closest-side, rgba(232,162,76,.13) 0%, rgba(232,162,76,.03) 46%, rgba(5,6,10,0) 78%);
+    filter: blur(12px); }
+  #sky .sky__scrim { position: absolute; display: block; left: 0; top: 0; width: 780px; height: 1080px;
+    background: linear-gradient(96deg, rgba(5,6,10,.9) 0%, rgba(5,6,10,.5) 42%, rgba(5,6,10,0) 80%); }
+
+  /* L1 月亮 */ #moon { z-index: 1; }
+  /* L2 斜切光柱：黑色电影的主光 */ #shaft { z-index: 2; }
+  /* L3 城市剪影 */ #skyline { z-index: 3; }
+  /* L5 雨 */ #rain { z-index: 5; }
+  /* L6 Calling card（怪盗名片） */ #card { z-index: 6; }
+  /* L4 暗角：压在场景之上、物体之下 */ #vignette { z-index: 4; }
+  #vignette .vignette__fill { position: absolute; inset: 0; display: block;
+    background: radial-gradient(72% 62% at 62% 40%, rgba(3,4,7,0) 38%, rgba(3,4,7,.5) 70%, rgba(3,4,7,.92) 100%),
+                linear-gradient(180deg, rgba(3,4,7,.5) 0%, rgba(3,4,7,0) 26%, rgba(3,4,7,0) 70%, rgba(3,4,7,.6) 100%); }
+
+  /* L7 巨型字（把「月」当图形用，不是标题） */
+  #type { z-index: 7; pointer-events: none; }
+  #type span { white-space: nowrap; }
+  #type .type__glyph { position: absolute; left: -66px; top: -168px; display: block;
+    font-family: var(--font-serif); font-weight: 600; font-size: 600px; line-height: .92;
+    letter-spacing: 0; color: var(--bone); opacity: .92;
+    text-shadow: 0 24px 90px rgba(220,233,245,.10); }
+  #type .type__vertical { position: absolute; left: 574px; top: 168px; display: block;
+    writing-mode: vertical-rl; text-orientation: upright;
+    font-family: var(--font-serif); font-weight: 600; font-size: 40px; letter-spacing: .46em; color: var(--silver); }
+  #type .type__vertical-en { position: absolute; left: 646px; top: 176px; display: block;
+    writing-mode: vertical-rl; font-family: var(--font-mono); font-size: 14px; font-weight: 400;
+    letter-spacing: .5em; color: var(--slate); }
+
+  /* L8 左下遥测 */
+  #meta { z-index: 8; pointer-events: none; }
+  #meta .meta__row { position: absolute; left: 200px; display: block;
+    font-family: var(--font-mono); font-size: 17px; font-weight: 400; letter-spacing: .18em; color: var(--slate); }
+  #meta .meta__row--a { top: 700px; color: var(--amber); }
+  #meta .meta__row--b { top: 736px; color: var(--silver); }
+  #meta .meta__row--c { top: 772px; }
+
+  /* L9 上下遮幅（2.39:1 电影感） */
+  #bars { z-index: 9; pointer-events: none; }
+  #bars .bar { position: absolute; left: 0; width: 1920px; height: 74px; display: block; background: #030407; }
+  #bars .bar--top { top: 0; transform-origin: 50% 0; }
+  #bars .bar--bottom { bottom: 0; transform-origin: 50% 100%; }
+  /* L10 颗粒：noir 更重 */
+  #grain { z-index: 10; opacity: .12; mix-blend-mode: overlay; pointer-events: none; }
+  /* L11 胶片划痕 + 轻微扫描线 */
+  #scratches { z-index: 11; pointer-events: none; opacity: .5;
+    background:
+      repeating-linear-gradient(180deg, rgba(244,240,230,.03) 0 1px, rgba(5,6,10,0) 1px 5px),
+      linear-gradient(90deg, rgba(5,6,10,0) 0 58.6%, rgba(244,240,230,.05) 58.6% 58.7%, rgba(5,6,10,0) 58.7%); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="shot-starter-noir" data-start="0" data-width="1920" data-height="1080" data-duration="8">
+
+  <div id="sky" class="clip" data-start="0" data-duration="8" data-track-index="0" data-layout-allow-caption-zone>
+    <span class="sky__base"></span><span class="sky__moonhaze"></span><span class="sky__warm"></span><span class="sky__scrim"></span>
+  </div>
+
+  <svg id="moon" class="clip" data-start="0" data-duration="8" data-track-index="1" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="moon-body" cx="42%" cy="38%" r="62%">
+        <stop offset="0%" stop-color="#F7FBFE"></stop><stop offset="58%" stop-color="#DCE9F5"></stop>
+        <stop offset="86%" stop-color="#AFC4D6"></stop><stop offset="100%" stop-color="#8EA3B6"></stop>
+      </radialGradient>
+      <radialGradient id="moon-halo" cx="50%" cy="50%" r="50%">
+        <stop offset="58%" stop-color="#DCE9F5" stop-opacity=".34"></stop>
+        <stop offset="78%" stop-color="#B9CFE2" stop-opacity=".12"></stop>
+        <stop offset="100%" stop-color="#0A0D14" stop-opacity="0"></stop>
+      </radialGradient>
+      <filter id="moon-blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="30"></feGaussianBlur></filter>`r`n      <filter id="crater-blur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9"></feGaussianBlur></filter>
+    </defs>
+    <g id="moon-system" data-layout-allow-overflow>
+      <circle id="moon-halo" cx="1576" cy="332" r="470" fill="url(#moon-halo)" filter="url(#moon-blur)"></circle>
+      <circle cx="1576" cy="332" r="298" fill="url(#moon-body)"></circle>
+      <g fill="#8DA2B5" opacity=".16" filter="url(#crater-blur)">
+        <circle cx="1492" cy="254" r="46"></circle><circle cx="1636" cy="392" r="62"></circle>
+        <circle cx="1550" cy="446" r="24"></circle><circle cx="1698" cy="246" r="20"></circle>
+        <circle cx="1440" cy="372" r="16"></circle>
+      </g>
+      <circle cx="1576" cy="332" r="298" fill="none" stroke="#EAF2FA" stroke-opacity=".34" stroke-width="1.2"></circle>
+    </g>
+  </svg>
+
+  <svg id="shaft" class="clip" data-start="0" data-duration="8" data-track-index="2" data-layout-allow-overflow viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="shaft-fill" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#DCE9F5" stop-opacity=".18"></stop>
+        <stop offset="52%" stop-color="#C3CDDA" stop-opacity=".07"></stop>
+        <stop offset="100%" stop-color="#DCE9F5" stop-opacity="0"></stop>
+      </linearGradient>
+      <linearGradient id="shaft-edge" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F4F0E6" stop-opacity="0"></stop>
+        <stop offset="26%" stop-color="#F4F0E6" stop-opacity=".55"></stop>
+        <stop offset="100%" stop-color="#F4F0E6" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <g id="shaft-system">
+      <polygon points="-260,-120 620,-120 1640,1080 820,1080" fill="url(#shaft-fill)"></polygon>
+      <polygon points="-260,-120 620,-120 1640,1080 820,1080" fill="none" stroke="url(#shaft-edge)" stroke-width="2"></polygon>
+      <line x1="620" y1="-120" x2="1640" y2="1080" stroke="#F4F0E6" stroke-opacity=".26" stroke-width="1"></line>
+    </g>
+  </svg>
+
+  <svg id="skyline" class="clip" data-start="0" data-duration="8" data-track-index="3" data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <g id="skyline-shape" fill="#0A0D14" stroke="#3C4657" stroke-width="1">
+      <path d="M0 1080 V 924 H 96 V 878 H 168 V 936 H 246 V 892 H 330 V 948 H 402 V 906 H 470 V 962 H 560 V 918 H 648 V 968 H 738 V 930 H 826 V 976 H 918 V 940 H 1004 V 986 H 1102 V 946 H 1188 V 992 H 1284 V 954 H 1372 V 1000 H 1466 V 962 H 1552 V 1006 H 1648 V 968 H 1738 V 1012 H 1824 V 974 H 1920 V 1080 Z"></path>
+    </g>
+    <g id="windows" fill="#E8A24C"></g>
+  </svg>
+
+  <svg id="rain" class="clip" data-start="0" data-duration="8" data-track-index="4" data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <g id="rain-system" data-layout-allow-overflow stroke="#C3CDDA" stroke-width="1" stroke-linecap="round"></g>
+  </svg>
+
+  <svg id="card" class="clip" data-start="0" data-duration="8" data-track-index="5" data-layout-allow-overflow viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="card-paper" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FBF8F1"></stop><stop offset="62%" stop-color="#F4F0E6"></stop>
+        <stop offset="100%" stop-color="#D8D2C3"></stop>
+      </linearGradient>
+      <clipPath id="card-clip"><rect x="-120" y="-70" width="240" height="140" rx="3"></rect></clipPath>
+      <filter id="card-shadow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="18"></feGaussianBlur></filter>
+    </defs>
+    <g id="card-shadow" fill="#030407" opacity=".6">
+      <rect x="-136" y="-52" width="272" height="150" rx="6" filter="url(#card-shadow)"></rect>
+    </g>
+    <g id="card-system">
+      <rect x="-120" y="-70" width="240" height="140" rx="3" fill="url(#card-paper)"></rect>
+      <g clip-path="url(#card-clip)">
+        <rect id="card-glint" x="-360" y="-70" width="120" height="140" fill="#FFFFFF" opacity=".55"></rect>
+      </g>
+      <circle id="card-seal" cx="96" cy="-46" r="19" fill="#C2453E"></circle>
+      <circle cx="96" cy="-46" r="13" fill="none" stroke="#F4F0E6" stroke-opacity=".55" stroke-width="1"></circle>
+      <line x1="-88" y1="-34" x2="42" y2="-34" stroke="#141924" stroke-opacity=".5" stroke-width="1"></line>
+      <line x1="-88" y1="16" x2="20" y2="16" stroke="#141924" stroke-opacity=".32" stroke-width="1"></line>
+      <text x="-88" y="52" font-family="Cormorant Garamond, serif" font-style="italic" font-weight="600" font-size="30" fill="#141924">02:47</text>
+    </g>
+  </svg>
+
+  <div id="vignette" class="clip" data-start="0" data-duration="8" data-track-index="6" data-layout-allow-caption-zone>
+    <span class="vignette__fill"></span>
+  </div>
+
+  <div id="type" class="clip" data-start="0" data-duration="8" data-track-index="7">
+    <span class="type__glyph" id="glyph" data-layout-allow-overflow data-layout-allow-caption-zone>月</span>
+    <span class="type__vertical">月影</span>
+    <span class="type__vertical-en">MOON / SHADOW</span>
+  </div>
+
+  <div id="meta" class="clip" data-start="0" data-duration="8" data-track-index="8">
+    <span class="meta__row meta__row--a">NIGHT 02:47</span>
+    <span class="meta__row meta__row--b">MOONLIGHT — 23F</span>
+    <span class="meta__row meta__row--c">SILHOUETTE 0.42</span>
+  </div>
+
+  <div id="bars" class="clip" data-start="0" data-duration="8" data-track-index="9" data-layout-allow-caption-zone>
+    <span class="bar bar--top"></span><span class="bar bar--bottom"></span>
+  </div>
+
+  <svg id="grain" class="clip" data-start="0" data-duration="8" data-track-index="10" data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <filter id="grain-noise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="4" stitchTiles="stitch" seed="19"></feTurbulence>
+      <feColorMatrix type="saturate" values="0"></feColorMatrix>
+    </filter>
+    <rect x="0" y="0" width="1920" height="1080" filter="url(#grain-noise)"></rect>
+  </svg>
+
+  <div id="scratches" class="clip" data-start="0" data-duration="8" data-track-index="11" data-layout-allow-caption-zone></div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script src="assets/shot-timeline.js"></script>
+<script>
+  /* 时间轴在字体就绪后构建并注册 */
+  document.fonts.ready.then(function () {
+    var tl = window.__buildShotTimeline();
+    window.__timelines['shot-starter-noir'] = tl;
+    if (typeof window.__hfForceTimelineRebind === 'function') window.__hfForceTimelineRebind();
+  });
+</script>
+</body>
+</html>

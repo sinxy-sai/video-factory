@@ -1,16 +1,16 @@
 {
-  "name": "science-video-factory",
+  "name": "video-factory",
   "version": "0.1.0",
   "private": false,
-  "description": "Manifest-driven science explainer videos with HyperFrames, Manim, Remotion, and FFmpeg.",
+  "description": "Manifest-driven AI-generated videos with HyperFrames, Manim, Remotion, and FFmpeg.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sinxy-sai/science-video-factory.git"
+    "url": "https://github.com/sinxy-sai/video-factory.git"
   },
   "bugs": {
-    "url": "https://github.com/sinxy-sai/science-video-factory/issues"
+    "url": "https://github.com/sinxy-sai/video-factory/issues"
   },
-  "homepage": "https://github.com/sinxy-sai/science-video-factory#readme",
+  "homepage": "https://github.com/sinxy-sai/video-factory#readme",
   "engines": {
     "node": ">=20"
   },
@@ -33,19 +33,26 @@
     "compare-episode-visual-regression": "tsx scripts/commands/compare-episode-visual-regression.ts",
     "create-episode": "tsx scripts/commands/create-episode.ts",
     "remove-episode": "tsx scripts/commands/remove-episode.ts",
+    "approve-episode": "tsx scripts/commands/approve-episode.ts",
+    "episode-status": "tsx scripts/commands/episode-status.ts",
     "generate-episode-registry": "tsx scripts/commands/generate-episode-registry.ts",
     "validate-all-episodes": "tsx scripts/commands/validate-all-episodes.ts",
     "doctor": "tsx scripts/commands/doctor.ts",
     "check-agent-harness": "tsx scripts/commands/check-agent-harness.ts",
     "sync-agent-harness-skill": "tsx scripts/commands/sync-agent-harness-skill.ts",
     "setup:python": "tsx scripts/commands/setup-python-dependencies.ts",
-    "test": "npm run generate-episode-registry && npm run typecheck && npm run validate-all-episodes && npm run test:default-composition && npm run test:remove-episode && npm run test:storyboard-beats && npm run test:caption-timing && npm run test:browser-routing && npm run test:agent-harness",
+    "test": "npm run generate-episode-registry && npm run typecheck && npm run validate-all-episodes && npm run test:default-composition && npm run test:remove-episode && npm run test:storyboard-beats && npm run test:caption-timing && npm run test:browser-routing && npm run test:episode-approval && npm run test:episode-status && npm run test:episode-scaffold && npm run test:caption-mode && npm run test:shot-selection && npm run test:agent-harness",
     "test:default-composition": "tsx scripts/tests/test-default-composition.ts",
     "test:remove-episode": "tsx scripts/tests/test-remove-episode.ts",
     "test:storyboard-beats": "tsx scripts/tests/test-storyboard-beats.ts",
     "test:caption-timing": "tsx scripts/tests/test-caption-timing.ts",
     "test:browser-routing": "tsx scripts/tests/test-shot-contract.ts && tsx scripts/tests/test-renderer-adapters.ts && tsx scripts/tests/test-shot-command-routing.ts && tsx scripts/tests/test-shot-assets.ts && tsx scripts/tests/test-shot-composition.ts && tsx scripts/tests/test-shot-text-contract.ts && tsx scripts/tests/test-dependency-resolution.ts && tsx scripts/tests/test-manim-adapter.ts && tsx scripts/tests/test-multilayer-routing.ts && tsx scripts/tests/test-layer-compositor.ts",
     "test:agent-harness": "tsx scripts/tests/test-agent-harness.ts",
+    "test:episode-approval": "tsx scripts/tests/test-episode-approval.ts",
+    "test:episode-status": "tsx scripts/tests/test-episode-status.ts",
+    "test:episode-scaffold": "tsx scripts/tests/test-episode-scaffold.ts",
+    "test:caption-mode": "tsx scripts/tests/test-caption-mode.ts",
+    "test:shot-selection": "tsx scripts/tests/test-shot-selection.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

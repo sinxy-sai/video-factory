@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>kid-phantom-pv shot-003</title>
+<script src="assets/gsap.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #07070A; }
+  * { box-sizing: border-box; }
+  [data-composition-id="shot-003"] {
+    position: relative; width: 100%; height: 100%; overflow: hidden;
+    background: #050508; color: #EDE7DA;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+  }
+  .scene { position: absolute; inset: 0; overflow: hidden; }
+  .frame { position: absolute; inset: 0; transform-origin: 62% 54%; }
+  .frame-snap { position: absolute; inset: 0; transform-origin: 64% 52%; }
+
+  #bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 64% 54%, #14101a 0%, #0c0912 32%, #07070b 62%, #050508 100%);
+  }
+  #glow {
+    position: absolute; left: 1180px; top: 560px; width: 1500px; height: 1500px;
+    margin: -750px 0 0 -750px;
+    background: radial-gradient(circle, rgba(200,30,58,0.20) 0%, rgba(200,30,58,0.07) 30%, rgba(212,175,106,0.03) 48%, rgba(200,30,58,0) 68%);
+    mix-blend-mode: screen;
+  }
+  #gridDots {
+    position: absolute; inset: 0; opacity: 0.5;
+    background-image: radial-gradient(circle, rgba(237,231,218,0.5) 1px, rgba(237,231,218,0) 1.5px);
+    background-size: 34px 34px; mix-blend-mode: overlay;
+  }
+
+  /* ---------- the lens ---------- */
+  #lens { position: absolute; left: 740px; top: 60px; width: 1000px; height: 1000px; overflow: visible; }
+
+  /* ---------- red threads ---------- */
+  #threads { position: absolute; inset: 0; }
+  .thread {
+    position: absolute; height: 2px; transform-origin: 0% 50%;
+    background: linear-gradient(to right, rgba(200,30,58,0) 0%, #C81E3A 12%, #E8566C 50%, #C81E3A 88%, rgba(200,30,58,0) 100%);
+    box-shadow: 0 0 14px rgba(200,30,58,0.55);
+  }
+
+  /* ---------- microlabels ---------- */
+  .type-layer { position: absolute; inset: 0; z-index: 25; }
+  #marks { position: absolute; inset: 0; }
+  .mark { position: absolute; font-family: "Cinzel", serif; font-size: 18px; font-weight: 600; letter-spacing: 0.28em; color: rgba(237,231,218,0.62); }
+  .mark-gold { color: rgba(212,175,106,0.85); }
+
+  /* ---------- grade ---------- */
+  #flash { position: absolute; inset: 0; background: #FFFDF7; opacity: 0; }
+  #printHalftone {
+    position: absolute; inset: 0; opacity: 0.10; mix-blend-mode: overlay;
+    background-image:
+      radial-gradient(circle, rgba(237,231,218,0.85) 0.9px, rgba(237,231,218,0) 1.4px),
+      radial-gradient(circle, rgba(237,231,218,0.4) 1.4px, rgba(237,231,218,0) 2px);
+    background-size: 6px 6px, 13px 13px; background-position: 0 0, 3px 4px;
+  }
+  #filmGrain { position: absolute; inset: 0; opacity: 0.23; mix-blend-mode: overlay; background-repeat: repeat; background-size: 256px 256px; }
+  #vignettePlate {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 52% 50% at 62% 52%, rgba(5,5,8,0) 24%, rgba(5,5,8,0.5) 64%, rgba(5,5,8,0.97) 100%),
+      linear-gradient(to bottom, rgba(5,5,8,0.7) 0%, rgba(5,5,8,0) 24%, rgba(5,5,8,0) 66%, rgba(5,5,8,0.85) 100%);
+  }
+  .bar { position: absolute; left: 0; width: 100%; height: 82px; background: #050508; z-index: 30; }
+  .bar-top { top: 0; box-shadow: 0 3px 16px rgba(5,5,8,0.95); }
+  .bar-bot { bottom: 0; box-shadow: 0 -3px 16px rgba(5,5,8,0.95); }
+</style>
+</head>
+<body>
+<div data-composition-id="shot-003" data-width="1920" data-height="1080" data-duration="4.2" data-start="0">
+  <div class="scene" data-layout-allow-overflow>
+    <div class="frame">
+      <div class="frame-snap">
+        <div id="bg"></div>
+        <div id="gridDots"></div>
+        <div id="glow"></div>
+
+        <svg id="lens" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-layout-allow-overflow>
+          <defs>
+            <linearGradient id="goldRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#F7E8C2" />
+              <stop offset="26%" stop-color="#D4AF6A" />
+              <stop offset="52%" stop-color="#8A6C33" />
+              <stop offset="74%" stop-color="#E4CB96" />
+              <stop offset="100%" stop-color="#6E5426" />
+            </linearGradient>
+            <radialGradient id="lensGlass" cx="38%" cy="30%" r="82%">
+              <stop offset="0%" stop-color="#231c26" />
+              <stop offset="46%" stop-color="#120e16" />
+              <stop offset="100%" stop-color="#07070b" />
+            </radialGradient>
+            <radialGradient id="irisGrad" cx="42%" cy="34%" r="70%">
+              <stop offset="0%" stop-color="#F0566C" />
+              <stop offset="42%" stop-color="#C81E3A" />
+              <stop offset="82%" stop-color="#7C0E20" />
+              <stop offset="100%" stop-color="#3E040E" />
+            </radialGradient>
+            <linearGradient id="glintGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="rgba(255,253,245,0)" />
+              <stop offset="46%" stop-color="rgba(255,253,245,0.62)" />
+              <stop offset="56%" stop-color="rgba(255,253,245,0.10)" />
+              <stop offset="100%" stop-color="rgba(255,253,245,0)" />
+            </linearGradient>
+            <clipPath id="lensClip"><circle cx="500" cy="500" r="352" /></clipPath>
+            <radialGradient id="bezelShade" cx="50%" cy="50%" r="50%">
+              <stop offset="86%" stop-color="rgba(5,5,8,0)" />
+              <stop offset="100%" stop-color="rgba(5,5,8,0.85)" />
+            </radialGradient>
+          </defs>
+
+          <!-- outer bezel -->
+          <circle cx="500" cy="500" r="382" fill="none" stroke="url(#goldRing)" stroke-width="16" opacity="0.95" />
+          <circle cx="500" cy="500" r="404" fill="none" stroke="rgba(212,175,106,0.32)" stroke-width="2" />
+          <circle cx="500" cy="500" r="360" fill="none" stroke="rgba(5,5,8,0.9)" stroke-width="7" />
+
+          <!-- glass -->
+          <circle cx="500" cy="500" r="352" fill="url(#lensGlass)" />
+          <g clip-path="url(#lensClip)">
+            <g id="iris">
+              <circle cx="500" cy="512" r="196" fill="url(#irisGrad)" />
+              <circle cx="500" cy="512" r="196" fill="none" stroke="rgba(5,5,8,0.55)" stroke-width="4" />
+              <circle cx="500" cy="512" r="150" fill="none" stroke="rgba(5,5,8,0.35)" stroke-width="2" />
+              <circle cx="500" cy="512" r="108" fill="none" stroke="rgba(5,5,8,0.3)" stroke-width="2" />
+              <circle cx="500" cy="512" r="76" fill="#050507" />
+              <circle cx="500" cy="512" r="76" fill="none" stroke="rgba(200,30,58,0.5)" stroke-width="3" />
+              <circle id="irisGlint" cx="448" cy="452" r="17" fill="rgba(255,253,245,0.9)" />
+            </g>
+            <rect id="glassSweep" x="-320" y="180" width="320" height="640" fill="url(#glintGrad)" />
+            <circle cx="500" cy="500" r="352" fill="url(#bezelShade)" />
+            <path d="M168 372 C244 236 386 168 520 172" fill="none" stroke="rgba(255,253,245,0.28)" stroke-width="5" stroke-linecap="round" />
+          </g>
+
+          <!-- graticule -->
+          <g id="graticule" opacity="0.9">
+            <path d="M120 500 L880 500" fill="none" stroke="rgba(237,231,218,0.16)" stroke-width="1.4" />
+            <path d="M500 120 L500 880" fill="none" stroke="rgba(237,231,218,0.10)" stroke-width="1.2" />
+            <path d="M386 500 L386 466 M500 500 L500 462 M614 500 L614 466" fill="none" stroke="rgba(212,175,106,0.6)" stroke-width="2" />
+            <circle cx="500" cy="500" r="268" fill="none" stroke="rgba(212,175,106,0.16)" stroke-width="1.2" stroke-dasharray="3 16" />
+          </g>
+
+          <!-- chain leaving frame -->
+          <path d="M300 236 C222 176 150 140 74 112" fill="none" stroke="url(#goldRing)" stroke-width="7" stroke-linecap="round" opacity="0.85" />
+          <circle cx="300" cy="236" r="18" fill="none" stroke="url(#goldRing)" stroke-width="6" />
+        </svg>
+
+        <div id="threads"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="type-layer">
+    <div id="marks">
+      <span class="mark mark-gold" style="left: 1332px; top: 236px;">F / 1.4</span>
+      <span class="mark" style="left: 150px; top: 300px;">XII</span>
+      <span class="mark" style="left: 150px; top: 792px;">MMXXVI</span>
+      <span class="mark mark-gold" style="left: 1592px; top: 792px;">0.618</span>
+    </div>
+  </div>
+
+  <div id="flash" class="clip" data-start="0" data-duration="4.2" data-track-index="6"></div>
+  <div id="printHalftone" class="clip" data-start="0" data-duration="4.2" data-track-index="8"></div>
+  <div id="filmGrain" class="clip" data-start="0" data-duration="4.2" data-track-index="9"></div>
+  <div id="vignettePlate" class="clip" data-start="0" data-duration="4.2" data-track-index="10"></div>
+
+  <span class="bar bar-top"></span>
+  <span class="bar bar-bot"></span>
+</div>
+
+<script>
+(function () {
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var rng = mulberry32(91573);
+
+  // red threads across the frame
+  var threadSpec = [
+    {top: 372, left: -120, width: 2160, slope: 2.2},
+    {top: 470, left: -120, width: 2160, slope: -1.4},
+    {top: 560, left: -120, width: 2160, slope: 0.6},
+    {top: 648, left: -120, width: 2160, slope: -2.6},
+    {top: 728, left: -120, width: 2160, slope: 1.8}
+  ];
+  var threadsRoot = document.getElementById('threads');
+  var threadNodes = [];
+  for (var i = 0; i < threadSpec.length; i++) {
+    var t = document.createElement('div');
+    t.className = 'thread';
+    t.style.top = threadSpec[i].top + 'px';
+    t.style.left = threadSpec[i].left + 'px';
+    t.style.width = threadSpec[i].width + 'px';
+    t.style.rotate = threadSpec[i].slope + 'deg';
+    threadsRoot.appendChild(t);
+    threadNodes.push({node: t, slope: threadSpec[i].slope});
+  }
+
+  // dust motes
+  var dustCount = 40;
+  var dust = [];
+  for (var d = 0; d < dustCount; d++) {
+    var dot = document.createElement('span');
+    dot.style.position = 'absolute';
+    dot.style.display = 'block';
+    dot.style.borderRadius = '50%';
+    dot.style.background = '#EDE7DA';
+    var size = 1.2 + rng() * 2.4;
+    dot.style.width = size.toFixed(2) + 'px';
+    dot.style.height = size.toFixed(2) + 'px';
+    dot.style.left = (rng() * 1920).toFixed(0) + 'px';
+    dot.style.top = (120 + rng() * 840).toFixed(0) + 'px';
+    dot.style.opacity = (0.1 + rng() * 0.35).toFixed(2);
+    threadsRoot.appendChild(dot);
+    dust.push({node: dot, rise: 30 + rng() * 60});
+  }
+
+  // film grain tile
+  var tile = document.createElement('canvas');
+  tile.width = 256; tile.height = 256;
+  var ctx = tile.getContext('2d');
+  var img = ctx.createImageData(256, 256);
+  for (var q = 0; q < img.data.length; q += 4) {
+    var v = Math.floor(rng() * 255);
+    img.data[q] = v; img.data[q + 1] = v; img.data[q + 2] = v;
+    img.data[q + 3] = Math.floor(rng() * 105);
+  }
+  ctx.putImageData(img, 0, 0);
+  document.getElementById('filmGrain').style.backgroundImage = 'url(' + tile.toDataURL('image/png') + ')';
+
+  var tl = gsap.timeline({ paused: true });
+
+  // 1. whip-in
+  tl.fromTo('.frame-snap', { x: 240, rotate: 2.6, scale: 1.08 }, { x: 0, rotate: 0, scale: 1, duration: 0.34, ease: 'power4.out' }, 0);
+  tl.fromTo('#glow', { opacity: 0, scale: 0.72 }, { opacity: 1, scale: 1, duration: 1.1, ease: 'power2.out' }, 0.05);
+
+  // 2. the lens snaps into place
+  tl.fromTo('#lens', { scale: 1.34, svgOrigin: '500 500' }, { scale: 1, svgOrigin: '500 500', duration: 0.72, ease: 'power4.out' }, 0.06);
+  tl.fromTo('#graticule', { opacity: 0, scale: 1.12, svgOrigin: '500 500' }, { opacity: 0.9, scale: 1, svgOrigin: '500 500', duration: 0.7, ease: 'power3.out' }, 0.55);
+
+  // 3. the iris contracts
+  tl.fromTo('#iris', { scale: 1.42, svgOrigin: '500 512' }, { scale: 0.62, svgOrigin: '500 512', duration: 1.5, ease: 'power2.inOut' }, 0.95);
+  tl.fromTo('#irisGlint', { opacity: 0 }, { opacity: 0.9, duration: 0.5, ease: 'power2.out' }, 1.5);
+
+  // 4. light sweeps across the glass
+  tl.fromTo('#glassSweep', { x: -120 }, { x: 1180, duration: 1.05, ease: 'power2.inOut' }, 0.7);
+
+  // 5. the red threads lock on
+  for (var k = 0; k < threadNodes.length; k++) {
+    tl.fromTo(threadNodes[k].node, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 0.92, duration: 0.42, ease: 'power3.out' }, 1.62 + k * 0.13);
+    tl.to(threadNodes[k].node, { rotate: threadNodes[k].slope + (k % 2 === 0 ? 0.7 : -0.7), duration: 0.18, ease: 'sine.inOut' }, 2.2 + k * 0.05);
+  }
+  tl.fromTo('#marks', { opacity: 0 }, { opacity: 1, duration: 0.55, ease: 'power2.out' }, 2.4);
+
+  // 6. dust drift
+  for (var m = 0; m < dust.length; m++) {
+    tl.fromTo(dust[m].node, { y: 0, opacity: 0 }, { y: -dust[m].rise, opacity: 0.4, duration: 4.1, ease: 'none' }, 0.05 + (m % 6) * 0.04);
+  }
+
+  // 7. push in and blow out to white
+  tl.fromTo('.frame', { scale: 1 }, { scale: 1.09, duration: 4.2, ease: 'none' }, 0);
+  tl.fromTo('#flash', { opacity: 0 }, { opacity: 1, duration: 0.16, ease: 'power2.in' }, 4.02);
+
+  // 8. grain flicker
+  for (var g = 0; g < 50; g++) {
+    var gx = Math.floor(rng() * 256);
+    var gy = Math.floor(rng() * 256);
+    tl.set('#filmGrain', { backgroundPosition: gx + 'px ' + gy + 'px' }, g * 0.083);
+  }
+
+  window.__timelines['shot-003'] = tl;
+})();
+</script>
+</div>
+</body>
+</html>

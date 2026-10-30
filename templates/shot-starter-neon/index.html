@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>shot-starter-neon — System D · Neon Tokyo / Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;900&display=swap" rel="stylesheet">
+<style>
+  /* ── 设计令牌：系统 D 霓虹东京，改镜头先改这里 ─────────────────── */
+  :root {
+    --night-0: #05030A;   /* 画布底 */
+    --night-1: #0B0616;   /* 深紫黑：渐变 / 面板 */
+    --panel:   #120B22;   /* HUD 卡片 / 终端 */
+    --paper:   #F2F5FF;   /* 主文字 */
+    --mist:    #A6B2CC;   /* 次级文字 */
+    --magenta: #FF2E88;   /* 主强调 / 当前项 */
+    --cyan:    #00E5FF;   /* 数据 / 进度 */
+    --lime:    #B6FF3C;   /* 成功 / 在线 */
+    --amber:   #FFB020;   /* 警示 */
+    --violet:  #7A5CFF;   /* 辅助 / 渐变过渡 */
+    --line:    rgba(122, 92, 255, .30);
+    --line-hi: rgba(0, 229, 255, .40);
+    --font-sans: "Noto Sans SC", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: var(--night-0); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--night-0); color: var(--paper); }
+  .clip { position: absolute; inset: 0; }
+
+  /* L0 大气：底色 / 双色霓虹雾 / 三面压暗 scrim */
+  #sky { z-index: 0; }
+  #sky span { position: absolute; display: block; }
+  .sky__base { inset: 0; background:
+      radial-gradient(72% 54% at 50% 54%, #1A1140 0%, #0B0616 46%, #05030A 82%),
+      linear-gradient(180deg, #05030A 0%, #0B0616 40%, #090418 74%, #05030A 100%); }
+  .sky__glow-c { left: 280px; top: 110px; width: 1420px; height: 1020px; filter: blur(9px);
+    background: radial-gradient(closest-side, rgba(0,229,255,.15) 0%, rgba(122,92,255,.09) 46%, rgba(5,3,10,0) 78%); }
+  .sky__glow-m { left: -280px; top: 520px; width: 1120px; height: 840px; filter: blur(11px);
+    background: radial-gradient(closest-side, rgba(255,46,136,.20) 0%, rgba(255,46,136,.05) 46%, rgba(5,3,10,0) 80%); }
+  .sky__glow-v { right: -220px; top: -200px; width: 1080px; height: 940px; filter: blur(12px);
+    background: radial-gradient(closest-side, rgba(122,92,255,.17) 0%, rgba(122,92,255,.04) 52%, rgba(5,3,10,0) 80%); }
+  .sky__scrim-l { left: 0; top: 0; width: 1020px; height: 1080px;
+    background: linear-gradient(96deg, rgba(5,3,10,.93) 0%, rgba(5,3,10,.66) 34%, rgba(5,3,10,0) 76%); }
+  .sky__scrim-r { right: 0; top: 0; width: 680px; height: 1080px;
+    background: linear-gradient(264deg, rgba(5,3,10,.91) 0%, rgba(5,3,10,.54) 40%, rgba(5,3,10,0) 80%); }
+  .sky__scrim-b { left: 0; bottom: 0; width: 1920px; height: 340px;
+    background: linear-gradient(0deg, rgba(5,3,10,.78) 0%, rgba(5,3,10,0) 100%); }
+
+  /* L1 透视网格走廊 + 线框城市 */ #field { z-index: 1; }
+  /* L2 数据核心：主体 */ #core { z-index: 2; }
+
+  /* L3 前景：光斑 + 浮尘（压过主体边缘制造景深） */
+  #fore { z-index: 3; pointer-events: none; }
+  #fore .mote { position: absolute; display: block; border-radius: 50%; filter: blur(4px);
+    background: radial-gradient(circle, rgba(242,245,255,.55) 0%, rgba(242,245,255,0) 70%); }
+  .mote--a { left: 1216px; top: 236px; width: 22px; height: 22px; opacity: .34; }
+  .mote--b { left: 1494px; top: 766px; width: 16px; height: 16px; opacity: .28; }
+  .mote--c { left: 648px; top: 186px; width: 12px; height: 12px; opacity: .24; }
+  .mote--d { left: 1178px; top: 862px; width: 28px; height: 28px; opacity: .18; }
+  #fore .bokeh { position: absolute; display: block; border-radius: 50%; filter: blur(26px); }
+  .bokeh--a { left: 540px; top: 748px; width: 230px; height: 230px; opacity: .55;
+    background: radial-gradient(circle, rgba(0,229,255,.22) 0%, rgba(0,229,255,0) 72%); }
+  .bokeh--b { left: 1088px; top: 116px; width: 160px; height: 160px; opacity: .34;
+    background: radial-gradient(circle, rgba(255,46,136,.20) 0%, rgba(255,46,136,0) 72%); }
+
+  /* L4 扫描光带：一次“测量”动作 */ #sweep { z-index: 4; pointer-events: none; }
+  #sweep .sweep__beam { position: absolute; display: block; top: 0; left: 0; width: 420px; height: 1080px; opacity: 0;
+    background: linear-gradient(90deg, rgba(0,229,255,0) 0%, rgba(0,229,255,.05) 58%, rgba(180,250,255,.14) 90%, rgba(242,245,255,.34) 98%, rgba(242,245,255,0) 100%);
+    border-right: 1px solid rgba(150,250,255,.8); }
+
+  /* L5 暗角：压在场景上、文字下 */ #vignette { z-index: 5; pointer-events: none; }
+  .vignette__fill { position: absolute; inset: 0; display: block;
+    background: radial-gradient(76% 68% at 54% 48%, rgba(5,3,10,0) 40%, rgba(5,3,10,.42) 72%, rgba(5,3,10,.86) 100%),
+                linear-gradient(180deg, rgba(5,3,10,.42) 0%, rgba(5,3,10,0) 22%, rgba(5,3,10,0) 70%, rgba(5,3,10,.56) 100%); }
+
+  /* L6 左栏排版：eyebrow → 标题 → hero 数据 → 单位 → 终端 → 注释 */
+  #type { z-index: 6; pointer-events: none; }
+  #type > span { position: absolute; display: block; white-space: nowrap; }
+  .t-eyebrow { left: 156px; top: 148px; font-family: var(--font-mono); font-size: 15px; font-weight: 400;
+    letter-spacing: .30em; color: var(--magenta); }
+  .t-title { left: 156px; top: 186px; font-family: var(--font-sans); font-size: 76px; font-weight: 900;
+    line-height: 1.02; letter-spacing: -.01em; color: var(--paper);
+    text-shadow: -1px 0 rgba(255,46,136,.45), 1px 0 rgba(0,229,255,.42), 0 0 36px rgba(0,229,255,.16); }
+  .t-rule { left: 156px; top: 292px; width: 268px; height: 1px; background: var(--line); }
+  .t-hero { left: 150px; top: 316px; font-family: var(--font-mono); font-size: 148px; font-weight: 500;
+    line-height: .9; letter-spacing: -.02em; color: var(--cyan); font-variant-numeric: tabular-nums;
+    text-shadow: -1px 0 rgba(255,46,136,.5), 1px 0 rgba(0,229,255,.45), 0 0 14px rgba(0,229,255,.5), 0 0 48px rgba(0,229,255,.26); }
+  .t-rule-live { left: 156px; top: 468px; width: 132px; height: 2px; background: var(--magenta);
+    box-shadow: 0 0 10px rgba(255,46,136,.9); }
+  .t-unit { left: 156px; top: 496px; font-family: var(--font-sans); font-size: 24px; font-weight: 400;
+    letter-spacing: .04em; color: var(--mist); }
+  .t-unit-en { left: 300px; top: 501px; font-family: var(--font-mono); font-size: 13px; font-weight: 400;
+    letter-spacing: .22em; color: var(--mist); }
+  .t-line { font-family: var(--font-mono); font-size: 25px; font-weight: 400; line-height: 1.6;
+    letter-spacing: .02em; color: var(--mist); }
+  .t-line--1 { left: 156px; top: 560px; }
+  .t-line--2 { left: 156px; top: 600px; }
+  .t-line--3 { left: 156px; top: 640px; }
+  .t-line--4 { left: 156px; top: 680px; }
+  .t-p { color: var(--magenta); opacity: 0; }
+  .t-note { left: 156px; top: 744px; font-family: var(--font-sans); font-size: 23px; font-weight: 400;
+    line-height: 1.4; letter-spacing: .04em; color: var(--mist); }
+
+  /* L6b 核心状态字样（叠在暗角之上，随主体 whip pan）*/
+  #corelabel { z-index: 6; pointer-events: none; }
+  #cl-rig { position: absolute; inset: 0; display: block; }
+  #cl-rig span { position: absolute; left: 810px; top: 288px; width: 240px; display: block;
+    text-align: center; white-space: nowrap; font-family: var(--font-mono); font-size: 15px;
+    font-weight: 400; letter-spacing: .28em; }
+  .cl-a { color: var(--magenta); }
+  .cl-b { color: var(--lime); opacity: 0; }
+
+  /* L7 右栏 HUD 数据列 */
+  #hud { z-index: 7; pointer-events: none; }
+  #hud > span { position: absolute; display: block; white-space: nowrap; }
+  .h-head { right: 156px; top: 148px; font-family: var(--font-mono); font-size: 15px; font-weight: 400;
+    letter-spacing: .28em; color: var(--magenta); text-align: right; }
+  .h-rule { right: 156px; top: 188px; width: 288px; height: 1px; background: var(--line-hi); }
+  .h-ladder { right: 444px; top: 216px; width: 10px; height: 292px;
+    background: repeating-linear-gradient(180deg, rgba(122,92,255,.5) 0 1px, rgba(122,92,255,0) 1px 12px); }
+  .h-k { left: 1500px; font-family: var(--font-mono); font-size: 14px; font-weight: 400;
+    letter-spacing: .22em; color: var(--mist); }
+  .h-v { right: 156px; font-family: var(--font-mono); font-size: 20px; font-weight: 500;
+    letter-spacing: .04em; color: var(--paper); text-align: right; }
+  .h-track { right: 156px; width: 288px; height: 1px; background: rgba(242,245,255,.14); }
+  .h-fill { right: 156px; width: 288px; height: 2px; background: var(--cyan); }
+  .h-status { left: 1500px; top: 536px; font-family: var(--font-mono); font-size: 14px; font-weight: 400;
+    letter-spacing: .22em; color: var(--amber); }
+
+  /* L8 顶部界面条 */ #scale { z-index: 8; }
+  /* L9 HUD 边角括号 */ #frame { z-index: 9; }
+  /* L10 颗粒：feTurbulence 静帧 */ #grain { z-index: 10; opacity: .085; mix-blend-mode: overlay; pointer-events: none; }
+  /* L11 扫描线 + 故障切片：最后叠加 */
+  #texture { z-index: 11; pointer-events: none;
+    background: repeating-linear-gradient(180deg, rgba(242,245,255,.055) 0 1px, rgba(5,3,10,0) 1px 4px); }
+  #glitch { position: absolute; inset: 0; display: block; opacity: 0; }
+  #glitch i { position: absolute; display: block; left: 0; width: 1920px; }
+  #glitch .g1 { top: 232px; height: 6px;
+    background: linear-gradient(90deg, rgba(255,46,136,0) 0%, rgba(255,46,136,.72) 22%, rgba(0,229,255,.7) 62%, rgba(0,229,255,0) 100%); }
+  #glitch .g2 { top: 636px; height: 10px;
+    background: linear-gradient(90deg, rgba(0,229,255,0) 0%, rgba(0,229,255,.66) 34%, rgba(255,46,136,.62) 74%, rgba(255,46,136,0) 100%); }
+  #glitch .g3 { top: 878px; height: 4px;
+    background: linear-gradient(90deg, rgba(255,46,136,0) 0%, rgba(255,46,136,.6) 48%, rgba(0,229,255,0) 100%); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="shot-starter-neon" data-start="0" data-width="1920" data-height="1080" data-duration="8">
+
+  <div id="sky" class="clip" data-start="0" data-duration="8" data-track-index="0" data-layout-allow-caption-zone>
+    <span class="sky__base"></span><span class="sky__glow-c"></span><span class="sky__glow-m"></span><span class="sky__glow-v"></span>
+    <span class="sky__scrim-l"></span><span class="sky__scrim-r"></span><span class="sky__scrim-b"></span>
+  </div>
+
+  <svg id="field" class="clip" data-start="0" data-duration="8" data-track-index="1" data-layout-allow-overflow data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="horizon-glow" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#00E5FF" stop-opacity="0"></stop>
+        <stop offset="54%" stop-color="#00E5FF" stop-opacity=".26"></stop>
+        <stop offset="100%" stop-color="#FF2E88" stop-opacity=".16"></stop>
+      </linearGradient>
+      <linearGradient id="floor-fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#05030A" stop-opacity=".94"></stop>
+        <stop offset="42%" stop-color="#05030A" stop-opacity=".3"></stop>
+        <stop offset="100%" stop-color="#05030A" stop-opacity="0"></stop>
+      </linearGradient>
+      <radialGradient id="vp-haze" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#00E5FF" stop-opacity=".2"></stop>
+        <stop offset="100%" stop-color="#00E5FF" stop-opacity="0"></stop>
+      </radialGradient>
+      <filter id="field-blur" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="18"></feGaussianBlur></filter>
+    </defs>
+    <g id="field-rig">
+      <g id="grid-ceil" stroke="#7A5CFF" stroke-width="1" stroke-opacity=".15" fill="none"></g>
+      <g id="grid-floor" stroke="#00E5FF" stroke-width="1" stroke-opacity=".2" fill="none"></g>
+      <rect x="0" y="518" width="1920" height="562" fill="url(#floor-fade)"></rect>
+      <g id="skyline-far" fill="none" stroke="#7A5CFF" stroke-opacity=".26" stroke-width="1"></g>
+      <g id="skyline" fill="#0B0616" stroke="#7A5CFF" stroke-opacity=".4" stroke-width="1"></g>
+      <g id="windows" fill="#FF2E88" fill-opacity=".5"></g>
+      <ellipse id="horizon-haze" cx="930" cy="520" rx="660" ry="102" fill="url(#vp-haze)" filter="url(#field-blur)"></ellipse>
+      <line id="horizon" x1="0" y1="520" x2="1920" y2="520" stroke="url(#horizon-glow)" stroke-width="2"></line>
+    </g>
+  </svg>
+
+  <svg id="core" class="clip" data-start="0" data-duration="8" data-track-index="2" data-layout-allow-overflow data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="core-halo" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#00E5FF" stop-opacity=".26"></stop>
+        <stop offset="46%" stop-color="#7A5CFF" stop-opacity=".13"></stop>
+        <stop offset="100%" stop-color="#05030A" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="core-glass" cx="42%" cy="34%" r="76%">
+        <stop offset="0%" stop-color="#1B1040" stop-opacity=".9"></stop>
+        <stop offset="58%" stop-color="#0B0616" stop-opacity=".82"></stop>
+        <stop offset="100%" stop-color="#05030A" stop-opacity=".58"></stop>
+      </radialGradient>
+      <filter id="core-blur-lg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="28"></feGaussianBlur></filter>
+    </defs>
+    <g id="core-rig">
+      <circle id="core-glow" cx="930" cy="620" r="336" fill="url(#core-halo)" filter="url(#core-blur-lg)"></circle>
+      <circle id="core-disc" cx="930" cy="620" r="284" fill="url(#core-glass)"></circle>
+      <g id="core-ticks" fill="none" stroke="#FF2E88" stroke-width="1"></g>
+      <g id="core-rings" fill="none" stroke-linecap="round">
+        <circle id="ring-dash" cx="930" cy="620" r="266" stroke="#7A5CFF" stroke-width="1" stroke-dasharray="2 10" stroke-opacity=".34"></circle>
+        <circle id="ring-ghost-a" cx="928.4" cy="620" r="266" stroke="#FF2E88" stroke-width="1" stroke-dasharray="2 10" stroke-opacity=".3"></circle>
+        <circle id="ring-ghost-b" cx="931.6" cy="620" r="266" stroke="#00E5FF" stroke-width="1" stroke-dasharray="2 10" stroke-opacity=".3"></circle>
+        <circle id="ring-main" cx="930" cy="620" r="266" pathLength="1" stroke="#00E5FF" stroke-width="2.4" stroke-dasharray="1 1" stroke-dashoffset="1" stroke-opacity=".92"></circle>
+        <circle id="ring-vio" cx="930" cy="620" r="212" stroke="#7A5CFF" stroke-width="1" stroke-dasharray="1 8" stroke-opacity=".3"></circle>
+        <circle id="ring-idx" cx="930" cy="620" r="212" pathLength="1" stroke="#FF2E88" stroke-width="3" stroke-dasharray=".1 .9" stroke-dashoffset="1" transform="rotate(-132 930 620)" stroke-opacity="0"></circle>
+        <circle id="ring-prog" cx="930" cy="620" r="160" pathLength="1" stroke="#00E5FF" stroke-width="1.6" stroke-dasharray="1 1" stroke-dashoffset="1" stroke-opacity=".78"></circle>
+        <line id="core-tick-l" x1="790" y1="620" x2="806" y2="620" stroke="#A6B2CC" stroke-width="1" stroke-opacity=".4"></line>
+        <line id="core-tick-r" x1="1054" y1="620" x2="1070" y2="620" stroke="#A6B2CC" stroke-width="1" stroke-opacity=".4"></line>
+        <line id="core-tick-t" x1="930" y1="518" x2="930" y2="534" stroke="#A6B2CC" stroke-width="1" stroke-opacity=".4"></line>
+        <line id="core-tick-b" x1="930" y1="706" x2="930" y2="722" stroke="#A6B2CC" stroke-width="1" stroke-opacity=".4"></line>
+      </g>
+      <g id="core-matrix"></g>
+      <g id="core-reticle" fill="none" stroke="#F2F5FF" stroke-opacity=".5" stroke-width="1">
+        <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 668 330 H 640 V 358"></path>
+        <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 1192 330 H 1220 V 358"></path>
+        <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 1220 882 V 910 H 1192"></path>
+        <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 640 882 V 910 H 668"></path>
+      </g>
+      </g>
+  </svg>
+
+  <div id="fore" class="clip" data-start="0" data-duration="8" data-track-index="3" data-layout-allow-caption-zone>
+    <span class="bokeh bokeh--a"></span><span class="bokeh bokeh--b"></span>
+    <span class="mote mote--a"></span><span class="mote mote--b"></span><span class="mote mote--c"></span><span class="mote mote--d"></span>
+  </div>
+
+  <div id="sweep" class="clip" data-start="0" data-duration="8" data-track-index="4" data-layout-allow-overflow data-layout-allow-caption-zone>
+    <span class="sweep__beam"></span>
+  </div>
+
+  <div id="vignette" class="clip" data-start="0" data-duration="8" data-track-index="5" data-layout-allow-caption-zone>
+    <span class="vignette__fill"></span>
+  </div>
+
+  <div id="type" class="clip" data-start="0" data-duration="8" data-track-index="6">
+    <span class="t-eyebrow">GRID NODE // A</span>
+    <span class="t-title">城市热区</span>
+    <span class="t-rule"></span>
+    <span class="t-hero" data-layout-allow-overlap>72.4%</span>
+    <span class="t-rule-live"></span>
+    <span class="t-unit" data-layout-allow-overlap>热区在线率</span>
+    <span class="t-unit-en">ONLINE RATE</span>
+    <span class="t-line t-line--1"><span class="t-p">&gt; </span><span class="t-txt">GRID SCAN</span></span>
+    <span class="t-line t-line--2"><span class="t-p">&gt; </span><span class="t-txt">4 NODES UP</span></span>
+    <span class="t-line t-line--3"><span class="t-p">&gt; </span><span class="t-txt">HEATMAP SYNC</span></span>
+    <span class="t-line t-line--4"><span class="t-p">&gt; </span><span class="t-txt">ZONE B LOCK</span></span>
+    <span class="t-note">网格扫描热区</span>
+  </div>
+
+  <!-- L6b 核心状态字样：与主体同向 whip pan 的文字层（叠于暗角之上） -->
+  <div id="corelabel" class="clip" data-start="0" data-duration="8" data-track-index="12">
+    <span id="cl-rig"><span class="cl-a">SCANNING</span><span class="cl-b">ZONE LOCK</span></span>
+  </div>
+
+  <div id="hud" class="clip" data-start="0" data-duration="8" data-track-index="7">
+    <span class="h-head">LIVE FEED</span>
+    <span class="h-rule"></span>
+    <span class="h-ladder"></span>
+    <span class="h-k" style="top:216px">LATENCY</span><span class="h-v" style="top:214px">12 ms</span>
+    <span class="h-track" style="top:250px"></span><span class="h-fill" data-w="0.34" data-w2="0.22" style="top:249px"></span>
+    <span class="h-k" style="top:296px">FLOW</span><span class="h-v" style="top:294px">3.4 GB</span>
+    <span class="h-track" style="top:330px"></span><span class="h-fill" data-w="0.62" data-w2="0.74" style="top:329px"></span>
+    <span class="h-k" style="top:376px">NODES</span><span class="h-v" style="top:374px">04</span>
+    <span class="h-track" style="top:410px"></span><span class="h-fill" data-w="0.48" data-w2="0.48" style="top:409px"></span>
+    <span class="h-k" style="top:456px">HEAT</span><span class="h-v" style="top:454px">72%</span>
+    <span class="h-track" style="top:490px"></span><span class="h-fill" data-w="0.55" data-w2="0.72" style="top:489px"></span>
+    <span class="h-status">LINK STABLE</span>
+  </div>
+
+  <svg id="scale" class="clip" data-start="0" data-duration="8" data-track-index="8" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <line id="scale-line" x1="0" y1="96" x2="1920" y2="96" stroke="#7A5CFF" stroke-opacity=".3" stroke-width="1"></line>
+    <line id="scale-live" x1="156" y1="96" x2="228" y2="96" stroke="#FF2E88" stroke-width="2"></line>
+    <g id="scale-ticks" stroke="#A6B2CC" stroke-width="1"></g>
+  </svg>
+
+  <svg id="frame" class="clip" data-start="0" data-duration="8" data-track-index="9" data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#F2F5FF" stroke-opacity=".34" stroke-width="1">
+    <g id="frame-marks" stroke-linecap="square">
+      <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 120 96 H 96 V 120"></path>
+      <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 1800 96 H 1824 V 120"></path>
+      <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 1824 960 V 984 H 1800"></path>
+      <path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1" d="M 96 960 V 984 H 120"></path>
+    </g>
+    <g stroke-opacity=".16">
+      <line x1="960" y1="96" x2="960" y2="108"></line><line x1="960" y1="972" x2="960" y2="984"></line>
+      <line x1="96" y1="540" x2="108" y2="540"></line><line x1="1812" y1="540" x2="1824" y2="540"></line>
+    </g>
+  </svg>
+
+  <svg id="grain" class="clip" data-start="0" data-duration="8" data-track-index="10" data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <filter id="grain-noise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".86" numOctaves="4" stitchTiles="stitch" seed="11"></feTurbulence>
+      <feColorMatrix type="saturate" values="0"></feColorMatrix>
+    </filter>
+    <rect x="0" y="0" width="1920" height="1080" filter="url(#grain-noise)"></rect>
+  </svg>
+
+  <div id="texture" class="clip" data-start="0" data-duration="8" data-track-index="11" data-layout-allow-caption-zone>
+    <span id="glitch"><i class="g1"></i><i class="g2"></i><i class="g3"></i></span>
+  </div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script src="assets/shot-timeline.js"></script>
+<script>
+  /* 时间轴在字体就绪后构建并注册，保证字宽/换行与最终渲染一致 */
+  document.fonts.ready.then(function () {
+    var tl = window.__buildShotTimeline();
+    window.__timelines['shot-starter-neon'] = tl;
+    if (typeof window.__hfForceTimelineRebind === 'function') window.__hfForceTimelineRebind();
+  });
+</script>
+</body>
+</html>

@@ -38,7 +38,9 @@ Remotion 总合成与 MP4 渲染
 
 ```powershell
 npm run create-episode -- my-topic
+npm run approve-episode -- my-topic
 npm run validate-episode-planning -- my-topic
+npm run episode-status -- my-topic
 npm run author-episode-shots -- my-topic
 npm run validate-episode-shots -- my-topic
 npm run preview-episode-shots -- my-topic
@@ -59,6 +61,14 @@ npm run check-agent-harness
 npm run sync-agent-harness-skill
 npm run setup:python
 ```
+
+`approve-episode -- <id> [--state shot-design-approved]` 是计划批准门禁：它检查 `content-plan.md` 和 `shot-design.md` 存在、非空、没有 placeholder，正文达到最低规模（各 300 个非空白字符、至少 2 段），然后把两份 front matter 的 `state` 与 `content`/`storyboard`/`shot-design` 三个 approvals 一次性写成批准状态。未批准前 `validate-episode-planning`、`author-episode-shots`、镜头渲染都会失败。
+
+`episode-status -- <id>` 汇总规划、分镜、镜头源文件、素材、渲染和输出的磁盘状态，并给出下一条应执行的命令，供 AI 在没有上下文时自主推进。它是只读命令，不会触发渲染。
+
+`validate-episode-shots`、`render-episode-shots` 和 `preview-episode-shots` 都支持只处理单个镜头：`--shot shot-002`（preview 也可以继续用位置参数 `shot-002`）。逐镜迭代时先用 `--shot` 跑通校验和预览，再渲染整集。
+
+`create-episode` 生成的默认浏览器镜头已经满足 `npx hyperframes check --strict`：所有 timed element 都带 `class="clip"`；脚手架的 manifest scene 声明 `captionMode: 'required'`。
 
 `npm run doctor` 是渲染前的依赖发现入口：它优先检查项目 `.venv` 中的 Python/Manim，以及 `tools/ffmpeg/bin` 中的 FFmpeg/FFprobe，不依赖系统 PATH。`npm run setup:python` 按 `requirements.txt` 创建或补齐项目 `.venv`。
 
@@ -92,6 +102,8 @@ npm run setup:python
 一个 ShotBrief 可以使用 `renderer: "composite"` 和 `implementation.composition: "layered"` 组合多个图层。每层声明自己的 renderer、源文件、`zIndex` 和输出；例如浏览器/Three.js 作为不透明背景，Manim 作为透明 PNG 序列叠加层。各层先独立渲染，再由 FFmpeg 按 zIndex 合成为一个镜头 MP4，Remotion 继续负责字幕、转场和 episode 级合成。所有图层必须共享镜头的尺寸、fps 和时长，最底层必须不透明。
 
 默认不添加音效、配乐或配音音频。旁白文案、屏幕字幕和未来的配音音频必须共享同一套 scene-relative 帧时间轴：`script.md`/ShotBrief 保存文案，manifest captions 保存显示区间，未来 voiceover cue 必须复用这些区间。当前尚未生成配音音频，但不能另起一套时间轴。字幕由 Remotion 的 CaptionLayer 统一渲染。`validate` 会强制检查剧本、分镜、ShotBrief、连续性、实现文件和字幕覆盖率。
+
+字幕覆盖率由每个 scene 的 `captionMode` 决定：`required`（默认，未声明时等价）要求字幕覆盖至少 80% 镜头时长；`optional` 允许稀疏字幕或没有字幕，不检查覆盖率；`none` 用于无字幕的 cinematic/PV 镜头，出现任何 caption 都会失败。浏览器镜头与 caption 的重复检测按 10 个连续汉字片段判断，常见连接短语不会误杀；ShotBrief 标题和镜号仍然禁止出现在镜头画面里。
 
 ### 画面文字与字幕分工
 

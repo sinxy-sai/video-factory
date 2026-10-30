@@ -2,12 +2,12 @@ import {existsSync, readdirSync, readFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
 import {shotBriefSchema, type ShotBrief} from '../../content/shot-brief';
 import type {EpisodeModule} from '../../content/episode-module';
+import {resolveCaptionMode, type SceneManifest} from '../../content/schema';
 import {validatePlanning} from '../../production/planning';
 import {implementationFiles, isLayeredImplementation} from '../../production/shot-contract';
+import {containsPlaceholder} from './placeholder-terms';
 
-const placeholderTerms = ['Replace with', 'Describe the science', 'Define palette', 'Choose a named', 'TODO', 'TBD'];
 const nonEmpty = (path: string) => existsSync(path) && readFileSync(path, 'utf8').trim().length > 0;
-const containsPlaceholder = (value: string) => placeholderTerms.some((term) => value.includes(term));
 
 const normalizeText = (value: string) => value.replace(/\s+/g, '').trim();
 const visibleText = (source: string) => source
@@ -44,16 +44,72 @@ export function validateBrowserShotText(input: {
     if (normalizedCaption.length >= 6 && normalizedSource.includes(normalizedCaption)) {
       throw new Error(`${input.episodeId}/${input.shotId}: browser shot repeats caption text; captions are rendered by Remotion`);
     }
-    const hanText = caption.replace(/[^\u3400-\u9fff]/g, '');
-    const captionFragments = Array.from({length: Math.max(0, hanText.length - 5)}, (_, index) => hanText.slice(index, index + 6));
-    if (captionFragments.some((fragment) => normalizedSource.includes(fragment))) {
-      throw new Error(`${input.episodeId}/${input.shotId}: browser shot repeats a caption phrase (${captionFragments.join('、')}); captions are rendered by Remotion`);
+    const duplicatedFragments = duplicatedCaptionFragments(caption, normalizedSource);
+    if (duplicatedFragments.length > 0) {
+      throw new Error(`${input.episodeId}/${input.shotId}: browser shot repeats caption phrases (${duplicatedFragments.join('、')}); captions are rendered by Remotion`);
     }
   }
 }
 
-export function loadShotBriefs(episodeId: string): ShotBrief[] {
-  const directory = resolve('content', 'episodes', episodeId, 'shot-briefs');
+// Chinese captions and in-shot labels both need short, shared vocabulary
+// ("缓存", "远处来源"). A six-character window matched almost any sentence, so
+// only a ten-character overlap still counts as duplicated narration. Fragments
+// that are mostly common connective phrasing are exempt because they carry no
+// explanation of their own.
+const CAPTION_DUPLICATION_FRAGMENT_LENGTH = 10;
+const MIN_FRAGMENT_CONTENT_CHARACTERS = 3;
+const commonCaptionPhrases = [
+  '这是一个', '这就是', '我们', '你们', '他们', '这是', '这个', '那个', '可以', '因为',
+  '所以', '但是', '如果', '那么', '什么', '怎么', '为什么', '一个', '一种', '不是',
+  '没有', '需要', '已经', '还是', '或者', '而且', '然后', '现在', '时候', '地方',
+  '知道', '看到', '觉得', '应该', '可能', '其实', '开始', '最后', '有些', '很多',
+  '非常', '比较', '通常', '一般', '一起', '这样', '那样', '只是', '就是', '还有',
+  '以及', '虽然', '不过', '于是', '因此', '例如', '比如', '每次', '这次', '那次',
+];
+
+function isCommonCaptionFragment(fragment: string): boolean {
+  let remainder = fragment;
+  for (const phrase of commonCaptionPhrases) remainder = remainder.split(phrase).join('');
+  return remainder.length < MIN_FRAGMENT_CONTENT_CHARACTERS;
+}
+
+function duplicatedCaptionFragments(caption: string, normalizedSource: string): string[] {
+  const hanText = caption.replace(/[^\u3400-\u9fff]/g, '');
+  const fragments: string[] = [];
+  for (let index = 0; index <= hanText.length - CAPTION_DUPLICATION_FRAGMENT_LENGTH; index += 1) {
+    const fragment = hanText.slice(index, index + CAPTION_DUPLICATION_FRAGMENT_LENGTH);
+    if (!normalizedSource.includes(fragment)) continue;
+    if (isCommonCaptionFragment(fragment)) continue;
+    fragments.push(fragment);
+  }
+  return [...new Set(fragments)];
+}
+
+/**
+ * Caption coverage follows the scene's caption mode:
+ * required (default) keeps the 80% contract, optional allows sparse captions,
+ * and none rejects captions entirely.
+ */
+export function validateSceneCaptions(input: {
+  episodeId: string;
+  shotId: string;
+  scene: SceneManifest;
+}): void {
+  const mode = resolveCaptionMode(input.scene);
+  const captionFrames = input.scene.captions.reduce((total, caption) => total + caption.durationInFrames, 0);
+  if (mode === 'none') {
+    if (input.scene.captions.length > 0) {
+      throw new Error(`${input.episodeId}/${input.shotId}: captionMode none requires an empty captions array`);
+    }
+    return;
+  }
+  if (mode === 'required' && captionFrames < input.scene.durationInFrames * 0.8) {
+    throw new Error(`${input.episodeId}/${input.shotId}: captions cover less than 80% of shot duration`);
+  }
+}
+
+export function loadShotBriefs(episodeId: string, projectRoot = process.cwd()): ShotBrief[] {
+  const directory = resolve(projectRoot, 'content', 'episodes', episodeId, 'shot-briefs');
   if (!existsSync(directory)) throw new Error(`${episodeId}: missing shot-briefs/`);
   const files = readdirSync(directory).filter((file) => /^shot-[0-9]{3}\.json$/.test(file)).sort();
   if (files.length === 0) throw new Error(`${episodeId}: shot-briefs/ must contain shot-001.json or later`);
@@ -73,7 +129,7 @@ export function validateWorkflow(episode: EpisodeModule): void {
     const path = join(root, file);
     if (!nonEmpty(path)) throw new Error(`${id}: missing ${file}`);
     const text = readFileSync(path, 'utf8');
-    if (placeholderTerms.some((term) => text.includes(term))) throw new Error(`${id}: ${file} still contains placeholder text`);
+    if (containsPlaceholder(text)) throw new Error(`${id}: ${file} still contains placeholder text`);
   }
   for (const directory of ['html', 'manim', 'assets/generated']) {
     if (!existsSync(join(root, directory))) throw new Error(`${id}: missing ${directory}/`);
@@ -125,8 +181,7 @@ export function validateWorkflow(episode: EpisodeModule): void {
       const previousLeaves = new Set(previous.continuity.leaves);
       for (const inherited of brief.continuity.inherits) if (!previousLeaves.has(inherited)) throw new Error(`${id}/${brief.id}: continuity inherits ${inherited}, but previous shot does not leave it`);
     }
-    const captionFrames = scene.captions.reduce((total, caption) => total + caption.durationInFrames, 0);
-    if (captionFrames < brief.durationInFrames * 0.8) throw new Error(`${id}/${brief.id}: captions cover less than 80% of shot duration`);
+    validateSceneCaptions({episodeId: id, shotId: brief.id, scene});
   }
   for (const scene of scenes) if (!briefSceneIds.has(scene.id)) throw new Error(`${id}: manifest scene ${scene.id} has no ShotBrief`);
 }

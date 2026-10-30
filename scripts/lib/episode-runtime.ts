@@ -7,15 +7,9 @@ import type {ShotBrief} from '../../content/shot-brief';
 import type {ShotAssetRecord} from '../../production/shot-assets';
 import {isLayeredImplementation} from '../../production/shot-contract';
 import {projectDependencyEnv} from './project-dependencies';
+import {assertEpisodeId} from './episode-id';
 
-const idPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-export function assertEpisodeId(id: string): string {
-  if (!idPattern.test(id)) {
-    throw new Error(`Invalid episode id "${id}". Use lowercase kebab-case, for example: my-topic`);
-  }
-  return id;
-}
+export {assertEpisodeId};
 
 export async function loadEpisodeModule(id: string): Promise<EpisodeModule> {
   const safeId = assertEpisodeId(id);

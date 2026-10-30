@@ -1,0 +1,283 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>smoke-test shot-001</title>
+<style>
+  /* ── 设计令牌：改镜头先改这里 ───────────────────────────────── */
+  :root {
+    --ink-0: #04070E;    /* 画布底 */
+    --ink-1: #07101C;    /* 大气 */
+    --ink-2: #0C1A28;    /* 仪器面板 */
+    --line: #1B3247;     /* 结构线 */
+    --line-hi: #2A4A63;  /* 高亮结构线 */
+    --paper: #EAF2FA;    /* 主文字 */
+    --mist: #A9BFD2;     /* 次级文字 */
+    --dim: #7E93AA;      /* 注释（对比度 ≥4.5:1） */
+    --signal: #5FE3D0;   /* 青：测量 / 锁定 */
+    --signal-deep: #2FA396;
+    --amber: #F2A65A;    /* 琥珀：目标 / 时钟 */
+    --violet: #8E7CFF;   /* 紫：参考轨道 */
+    --font-display: "Cormorant Garamond", serif;
+    --font-sans: "Noto Sans SC", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: var(--ink-0); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--ink-0); color: var(--paper); }
+  .clip { position: absolute; inset: 0; }
+
+  /* L0 大气：底色 / 冷辉光 / 暖反差 / 左栏压暗 */
+  #sky { z-index: 0; }
+  #sky .sky__base { position: absolute; inset: 0; display: block;
+    background: radial-gradient(88% 70% at 66% 26%, #12303F 0%, #0A1723 42%, #04070E 82%),
+                linear-gradient(178deg, #081522 0%, #04070E 68%, #050B12 100%); }
+  #sky .sky__glow { position: absolute; display: block; left: 640px; top: -220px; width: 1320px; height: 1180px;
+    background: radial-gradient(closest-side, rgba(95,227,208,.20) 0%, rgba(47,163,150,.07) 46%, rgba(4,7,14,0) 78%);
+    filter: blur(6px); }
+  #sky .sky__warm { position: absolute; display: block; left: -260px; top: 520px; width: 980px; height: 760px;
+    background: radial-gradient(closest-side, rgba(242,166,90,.12) 0%, rgba(242,166,90,.03) 48%, rgba(4,7,14,0) 80%);
+    filter: blur(10px); }
+  #sky .sky__scrim { position: absolute; display: block; left: 0; top: 0; width: 900px; height: 1080px;
+    background: linear-gradient(96deg, rgba(4,7,14,.86) 0%, rgba(4,7,14,.55) 38%, rgba(4,7,14,0) 76%); }
+
+  /* L1 星场 + 经纬网格 */ #field { z-index: 1; }
+  /* L2 轨道系统：主体 */ #orbits { z-index: 2; }
+
+  /* L3 前景浮尘：最靠近镜头的一层景深 */
+  #dust { z-index: 3; pointer-events: none; }
+  #dust .mote { position: absolute; display: block; border-radius: 50%; filter: blur(3px);
+    background: radial-gradient(circle, rgba(234,242,250,.42) 0%, rgba(234,242,250,0) 70%); }
+  #dust .mote--a { left: 860px; top: 168px; width: 26px; height: 26px; opacity: .5; }
+  #dust .mote--b { left: 1512px; top: 742px; width: 18px; height: 18px; opacity: .38; }
+  #dust .mote--c { left: 1660px; top: 216px; width: 12px; height: 12px; opacity: .3; }
+  #dust .mote--d { left: 744px; top: 806px; width: 34px; height: 34px; opacity: .22; }
+
+  /* L4 扫描光带：一次“测量”动作 */
+  #sweep { z-index: 4; pointer-events: none; }
+  #sweep .sweep__beam { position: absolute; display: block; top: 0; left: -460px; width: 460px; height: 1080px; opacity: 0;
+    background: linear-gradient(90deg, rgba(95,227,208,0) 0%, rgba(95,227,208,.03) 54%, rgba(175,255,245,.11) 88%, rgba(234,242,250,.26) 97%, rgba(234,242,250,0) 100%);
+    border-right: 1px solid rgba(175,255,245,.72); }
+
+  /* L5 暗角：压在画面之上、文字之下 */
+  #vignette { z-index: 5; pointer-events: none; }
+  #vignette .vignette__fill { position: absolute; inset: 0; display: block;
+    background: radial-gradient(74% 66% at 62% 44%, rgba(2,4,8,0) 42%, rgba(2,4,8,.44) 72%, rgba(2,4,8,.84) 100%),
+                linear-gradient(180deg, rgba(2,4,8,.38) 0%, rgba(2,4,8,0) 24%, rgba(2,4,8,0) 72%, rgba(2,4,8,.5) 100%); }
+
+  /* L6 左栏排版：eyebrow → 主体数字 → 单位 → 元数据 */
+  #type { z-index: 6; pointer-events: none; }
+  #type span { white-space: nowrap; }
+  #type .type__eyebrow { position: absolute; left: 156px; top: 164px; display: block;
+    font-family: var(--font-mono); font-size: 19px; font-weight: 500; letter-spacing: .34em; color: var(--signal); }
+  #type .type__subject { position: absolute; left: 156px; top: 204px; display: block;
+    font-family: var(--font-sans); font-size: 24px; font-weight: 400; letter-spacing: .40em; color: var(--mist); }
+  #type .type__rule { position: absolute; left: 156px; top: 260px; display: block; width: 72px; height: 1px; background: var(--line-hi); }
+  #type .type__rule-live { position: absolute; left: 156px; top: 260px; display: block; width: 24px; height: 1px; background: var(--signal); }
+  #type .type__hero { position: absolute; left: 148px; top: 372px; display: block;
+    font-family: var(--font-display); font-size: 240px; font-weight: 500; line-height: .78;
+    letter-spacing: -.012em; color: var(--paper); font-variant-numeric: lining-nums tabular-nums; }
+  #type .type__hero-unit { position: absolute; left: 170px; top: 596px; display: block;
+    font-family: var(--font-sans); font-size: 27px; font-weight: 500; letter-spacing: .16em; color: var(--paper); }
+  #type .type__hero-en { position: absolute; left: 442px; top: 604px; display: block;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 400; letter-spacing: .24em; color: var(--dim); }
+  #type .type__meta { position: absolute; left: 170px; display: block;
+    font-family: var(--font-mono); font-size: 17px; font-weight: 400; letter-spacing: .06em; color: var(--mist); }
+  #type .type__meta--a { top: 682px; }
+  #type .type__meta--b { top: 716px; }
+
+  /* L7 右上遥测 */
+  #readout { z-index: 7; pointer-events: none; }
+  #readout .readout__row { position: absolute; right: 156px; display: block; text-align: right;
+    font-family: var(--font-mono); font-size: 16px; font-weight: 400; letter-spacing: .14em; color: var(--mist); }
+  #readout .readout__row--a { top: 164px; color: var(--amber); }
+  #readout .readout__row--b { top: 196px; }
+  #readout .readout__row--c { top: 228px; color: var(--dim); }
+  #readout .readout__tick { position: absolute; right: 156px; top: 132px; display: block; width: 1px; height: 14px; background: var(--amber); }
+
+  /* L8 顶部标尺 */ #scale { z-index: 8; }
+  /* L9 画框定位角 */ #frame { z-index: 9; }
+
+  /* L10 颗粒：feTurbulence 静帧，确定性 */
+  #grain { z-index: 10; opacity: .075; mix-blend-mode: overlay; pointer-events: none; }
+  /* L11 极轻扫描线 */
+  #scanlines { z-index: 11; pointer-events: none; opacity: .16;
+    background: repeating-linear-gradient(180deg, rgba(234,242,250,.05) 0 1px, rgba(4,7,14,0) 1px 4px); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="shot-001" data-start="0" data-width="1920" data-height="1080" data-duration="5">
+
+  <div id="sky" class="clip" data-start="0" data-duration="5" data-track-index="0" data-layout-allow-caption-zone>
+    <span class="sky__base"></span><span class="sky__glow"></span><span class="sky__warm"></span><span class="sky__scrim"></span>
+  </div>
+
+  <svg id="field" class="clip" data-start="0" data-duration="5" data-track-index="1" data-layout-allow-overflow viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="grid-fade" cx="64%" cy="42%" r="62%">
+        <stop offset="0%" stop-color="#EAF2FA" stop-opacity=".55"></stop>
+        <stop offset="62%" stop-color="#EAF2FA" stop-opacity=".16"></stop>
+        <stop offset="100%" stop-color="#EAF2FA" stop-opacity="0"></stop>
+      </radialGradient>
+      <mask id="grid-mask"><rect x="0" y="0" width="1920" height="1080" fill="url(#grid-fade)"></rect></mask>
+    </defs>
+    <g id="grid" mask="url(#grid-mask)" stroke="#7E93AA" stroke-width="1" fill="none">
+      <g id="grid-lines" stroke-opacity=".13"></g>
+      <line x1="0" y1="470" x2="1920" y2="470" stroke="#A9BFD2" stroke-opacity=".2"></line>
+      <line x1="1252" y1="0" x2="1252" y2="1080" stroke="#A9BFD2" stroke-opacity=".1"></line>
+    </g>
+    <g id="stars" fill="#EAF2FA"></g>
+    <g id="glints" stroke="#EAF2FA" stroke-width="1" fill="none"></g>
+  </svg>
+
+  <svg id="orbits" class="clip" data-start="0" data-duration="5" data-track-index="2" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="planet-body" cx="36%" cy="30%" r="78%">
+        <stop offset="0%" stop-color="#E6F1FA"></stop><stop offset="34%" stop-color="#9FBDD2"></stop>
+        <stop offset="66%" stop-color="#3E6179"></stop><stop offset="88%" stop-color="#12222E"></stop>
+        <stop offset="100%" stop-color="#070D15"></stop>
+      </radialGradient>
+      <radialGradient id="planet-atmo" cx="50%" cy="50%" r="50%">
+        <stop offset="72%" stop-color="#5FE3D0" stop-opacity="0"></stop>
+        <stop offset="88%" stop-color="#5FE3D0" stop-opacity=".20"></stop>
+        <stop offset="100%" stop-color="#5FE3D0" stop-opacity="0"></stop>
+      </radialGradient>
+      <linearGradient id="planet-limb" x1="0" y1="0" x2=".85" y2="1">
+        <stop offset="0%" stop-color="#B9FFF4" stop-opacity=".95"></stop>
+        <stop offset="46%" stop-color="#63C9D8" stop-opacity=".38"></stop>
+        <stop offset="100%" stop-color="#0A1A26" stop-opacity="0"></stop>
+      </linearGradient>
+      <linearGradient id="planet-shade" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#04070E" stop-opacity="0"></stop>
+        <stop offset="46%" stop-color="#04070E" stop-opacity=".05"></stop>
+        <stop offset="100%" stop-color="#04070E" stop-opacity=".86"></stop>
+      </linearGradient>
+      <radialGradient id="planet-halo" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#5FE3D0" stop-opacity=".44"></stop>
+        <stop offset="52%" stop-color="#2FA396" stop-opacity=".13"></stop>
+        <stop offset="100%" stop-color="#0B1E2A" stop-opacity="0"></stop>
+      </radialGradient>
+      <filter id="blur-lg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="26"></feGaussianBlur></filter>
+      <filter id="blur-sm" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"></feGaussianBlur></filter>
+    </defs>
+    <g id="orbit-system" data-layout-allow-overflow>
+      <!-- 仪器水平轴：从左侧留白进入，制造非对称三分 -->
+      <g id="horizon">
+        <line x1="700" y1="470" x2="1844" y2="470" stroke="#2A4A63" stroke-width="1"></line>
+        <line x1="700" y1="470" x2="1844" y2="470" stroke="#A9BFD2" stroke-width="9" stroke-opacity=".2" stroke-dasharray="1 36"></line>
+        <line id="horizon-scan" x1="700" y1="470" x2="1844" y2="470" stroke="#5FE3D0" stroke-width="1" stroke-opacity=".9" pathLength="1" stroke-dasharray=".16 .84"></line>
+      </g>
+      <!-- 参考轨道：实线主环 / 齿距环 / 虚线中环 / 内环 / 卫星轨道 -->
+      <g id="rings" fill="none">
+        <circle cx="1252" cy="452" r="336" stroke="#5FE3D0" stroke-opacity=".2" stroke-width="1"></circle>
+        <circle cx="1252" cy="452" r="336" stroke="#5FE3D0" stroke-opacity=".34" stroke-width="9" stroke-dasharray="1 24"></circle>
+        <circle cx="1252" cy="452" r="244" stroke="#7E93AA" stroke-opacity=".28" stroke-width="1" stroke-dasharray="2 10"></circle>
+        <circle cx="1252" cy="452" r="176" stroke="#F2A65A" stroke-opacity=".32" stroke-width="1"></circle>
+        <ellipse id="sat-path" cx="1252" cy="452" rx="336" ry="132" transform="rotate(-14 1252 452)" stroke="#8E7CFF" stroke-opacity=".2" stroke-width="1" stroke-dasharray="3 9"></ellipse>
+      </g>
+      <!-- 弧段：三处不同半径的刻度弧，承担“读数”职责 -->
+      <g id="arcs" fill="none" stroke-linecap="round">
+        <path id="arc-main" d="M 1085.6 161.2 A 336 336 0 0 1 1543.5 273.8" pathLength="1" stroke="#5FE3D0" stroke-width="2.2" stroke-dasharray="1 1" stroke-dashoffset="1"></path>
+        <circle id="arc-amber" cx="1252" cy="452" r="244" pathLength="1" stroke="#F2A65A" stroke-width="3" stroke-opacity=".62" stroke-dasharray=".17 .83" transform="rotate(96 1252 452)"></circle>
+        <circle id="arc-violet" cx="1252" cy="452" r="176" pathLength="1" stroke="#8E7CFF" stroke-width="2" stroke-opacity=".55" stroke-dasharray=".13 .87" transform="rotate(196 1252 452)"></circle>
+        <circle id="arc-live" cx="1252" cy="452" r="352" pathLength="1" stroke="#5FE3D0" stroke-width="1.4" stroke-opacity=".5" stroke-dasharray=".06 .94" transform="rotate(24 1252 452)"></circle>
+      </g>
+      <!-- 行星：大气辉光 / 本体 / 半球明暗 / 临边光 / 细环 -->
+      <g id="planet-group">
+        <circle id="planet-halo-glow" cx="1252" cy="452" r="152" fill="url(#planet-halo)" filter="url(#blur-lg)"></circle>
+        <circle cx="1252" cy="452" r="88" fill="#0A1A26" stroke="#5FE3D0" stroke-opacity=".16"></circle>
+        <circle cx="1252" cy="452" r="86" fill="url(#planet-body)"></circle>
+        <circle cx="1252" cy="452" r="86" fill="url(#planet-atmo)"></circle>
+        <circle cx="1252" cy="452" r="86" fill="url(#planet-shade)"></circle>
+        <circle id="planet-limb" cx="1252" cy="452" r="86" fill="none" stroke="url(#planet-limb)" stroke-width="2.4"></circle>
+        <ellipse id="planet-ring" cx="1252" cy="452" rx="118" ry="26" transform="rotate(-14 1252 452)" fill="none" stroke="#F2A65A" stroke-opacity=".3" stroke-width="1.2"></ellipse>
+      </g>
+      <!-- 准星：四角括号 + 十字缺口 -->
+      <g id="reticle" stroke="#EAF2FA" stroke-width="1.4" fill="none" stroke-opacity=".55" stroke-linecap="square">
+        <path d="M 1112 364 V 328 H 1148"></path><path d="M 1356 328 H 1392 V 364"></path>
+        <path d="M 1392 540 V 576 H 1356"></path><path d="M 1148 576 H 1112 V 540"></path>
+        <line x1="1252" y1="404" x2="1252" y2="424" stroke-opacity=".3"></line>
+        <line x1="1252" y1="480" x2="1252" y2="500" stroke-opacity=".3"></line>
+        <line x1="1204" y1="452" x2="1224" y2="452" stroke-opacity=".3"></line>
+        <line x1="1280" y1="452" x2="1300" y2="452" stroke-opacity=".3"></line>
+      </g>
+      <!-- 卫星：沿椭圆轨道运行（路径由脚本按参数确定性生成） -->
+      <circle id="sat-glow" cx="1252" cy="320" r="16" fill="#5FE3D0" opacity=".26" filter="url(#blur-sm)"></circle>
+      <circle id="sat" cx="1252" cy="320" r="4.4" fill="#EAFFF9"></circle>
+    </g>
+  </svg>
+
+  <div id="dust" class="clip" data-start="0" data-duration="5" data-track-index="3" data-layout-allow-caption-zone>
+    <span class="mote mote--a"></span><span class="mote mote--b"></span><span class="mote mote--c"></span><span class="mote mote--d"></span>
+  </div>
+
+  <div id="sweep" class="clip" data-start="0" data-duration="5" data-track-index="4" data-layout-allow-overflow data-layout-allow-caption-zone>
+    <span class="sweep__beam"></span>
+  </div>
+
+  <div id="vignette" class="clip" data-start="0" data-duration="5" data-track-index="5" data-layout-allow-caption-zone>
+    <span class="vignette__fill"></span>
+  </div>
+
+  <div id="type" class="clip" data-start="0" data-duration="5" data-track-index="6">
+    <span class="type__eyebrow">DETERMINISTIC RENDER</span>
+    <span class="type__subject">帧时间驱动 · 逐帧复现</span>
+    <span class="type__rule"></span>
+    <span class="type__rule-live" id="rule-live"></span>
+    <span class="type__hero" id="hero-figure" data-layout-allow-overlap>1:1</span>
+    <span class="type__hero-unit" data-layout-allow-overlap>帧对帧复现</span>
+    <span class="type__hero-en">FRAME-EXACT</span>
+    <span class="type__meta type__meta--a">T+0.000 s</span>
+    <span class="type__meta type__meta--b">T+5.000 s</span>
+  </div>
+
+  <div id="readout" class="clip" data-start="0" data-duration="5" data-track-index="7">
+    <span class="readout__tick"></span>
+    <span class="readout__row readout__row--a">FRAME 0150</span>
+    <span class="readout__row readout__row--b">SEED 20261028</span>
+    <span class="readout__row readout__row--c">REPRODUCIBLE</span>
+  </div>
+
+  <svg id="scale" class="clip" data-start="0" data-duration="5" data-track-index="8" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <line id="scale-line" x1="156" y1="118" x2="1764" y2="118" stroke="#2A4A63" stroke-width="1"></line>
+    <g id="ruler-ticks" stroke="#7E93AA" stroke-width="1"></g>
+    <g fill="#7E93AA" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="1.6">
+      <text x="148" y="96" text-anchor="start">T+0.0</text>
+      <text x="704" y="96" text-anchor="middle">T+1.7</text>
+      <text x="1252" y="96" text-anchor="middle">T+3.4</text>
+      <text x="1800" y="96" text-anchor="end">T+5.0</text>
+    </g>
+    <text x="1764" y="142" fill="#5FE3D0" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="2.2" text-anchor="end">TIMELINE</text>
+  </svg>
+
+  <svg id="frame" class="clip" data-start="0" data-duration="5" data-track-index="9" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#EAF2FA" stroke-opacity=".3" stroke-width="1">
+    <g id="frame-marks">
+      <path d="M 96 132 V 96 H 132"></path><path d="M 1788 96 H 1824 V 132"></path>
+      <path d="M 1824 948 V 984 H 1788"></path><path d="M 132 984 H 96 V 948"></path>
+      <line x1="960" y1="96" x2="960" y2="110"></line><line x1="960" y1="970" x2="960" y2="984"></line>
+    </g>
+  </svg>
+
+  <svg id="grain" class="clip" data-start="0" data-duration="5" data-track-index="10" data-layout-allow-caption-zone viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <filter id="grain-noise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".86" numOctaves="4" stitchTiles="stitch" seed="7"></feTurbulence>
+      <feColorMatrix type="saturate" values="0"></feColorMatrix>
+    </filter>
+    <rect x="0" y="0" width="1920" height="1080" filter="url(#grain-noise)"></rect>
+  </svg>
+
+  <div id="scanlines" class="clip" data-start="0" data-duration="5" data-track-index="11" data-layout-allow-caption-zone></div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script src="assets/shot-timeline.js"></script>
+<script>
+  /* 时间轴在字体就绪后构建并注册，保证字宽/换行与最终渲染一致 */
+  document.fonts.ready.then(function () {
+    var tl = window.__buildShotTimeline();
+    window.__timelines['shot-001'] = tl;
+    if (typeof window.__hfForceTimelineRebind === 'function') window.__hfForceTimelineRebind();
+  });
+</script>
+</body>
+</html>

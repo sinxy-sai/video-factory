@@ -1,0 +1,65 @@
+{
+    "id":  "shot-001",
+    "sceneId":  "moon-arrival",
+    "title":  "月轮与剪影",
+    "narration":  "月轮亮起，礼帽披风的剪影从黑暗中升起，探照灯扫过帽檐。",
+    "visual":  "moon-arrival",
+    "renderer":  "browser",
+    "visualStyle":  "episode-defined",
+    "visualDirection":  {
+                            "composition":  "低角度半身剪影压在画面右下并被画幅裁切，巨型圆月占据左上半幅，探照灯斜穿形成对角线",
+                            "focalPoint":  "单片眼镜的金环与月轮边缘构成的夹角",
+                            "hierarchy":  [
+                                              "低角度礼帽披风剪影",
+                                              "巨型圆月与光晕",
+                                              "探照灯与绯红细线",
+                                              "浮尘、网点与颗粒"
+                                          ],
+                            "palette":  "#07070A 近黑底与剪影 / #EDE7DA 月光与边缘光 / #D4AF6A 暗金眼镜与帽带 / #C81E3A 预告函细线",
+                            "typography":  "Cinzel 600 21px 拉丁标签，Noto Serif SC 26px、字距 0.56em 的中文短标签",
+                            "texture":  "9-11% 双套网点、22% 种子颗粒、椭圆暗角、82px 遮幅黑边"
+                        },
+    "motion":  {
+                   "entrance":  "月亮由 1.3 倍压缩到 1.0 亮起，剪影上移 120px 进入画面",
+                   "transformation":  "clip-path 探照灯横扫过帽檐与披风，边缘光随光扫亮起",
+                   "exit":  "剪影压暗，硬切接下一镜白闪",
+                   "transition":  "hard-cut",
+                   "pacing":  "slow"
+               },
+    "durationInFrames":  144,
+    "continuity":  {
+                       "leaves":  [
+                                      "moon-disc",
+                                      "gold-monocle",
+                                      "night-sky"
+                                  ],
+                       "inherits":  [
+
+                                    ]
+                   },
+    "implementation":  {
+                           "sourceRoot":  "html/shot-001",
+                           "output":  {
+                                          "kind":  "mp4",
+                                          "path":  "renders/kid-phantom-pv/shots/shot-001.mp4",
+                                          "width":  1920,
+                                          "height":  1080,
+                                          "fps":  30
+                                      },
+                           "composition":  "asset",
+                           "visualMode":  "html",
+                           "files":  [
+                                         "html/shot-001/index.html"
+                                     ]
+                       },
+    "qualityChecks":  {
+                          "lint":  true,
+                          "validate":  true,
+                          "inspect":  true,
+                          "animationMap":  true,
+                          "strict":  true
+                      },
+    "assets":  [
+
+               ]
+}

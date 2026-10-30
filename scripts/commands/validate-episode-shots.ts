@@ -4,15 +4,25 @@ import {spawnSync} from 'node:child_process';
 import {loadEpisodeManifest, shotSourceDirectory} from '../lib/episode-runtime';
 import {loadShotBriefs} from '../lib/episode-workflow-validation';
 import {getRendererAdapter, validateRenderer} from '../../production/renderers';
+import {selectShotBriefs} from '../lib/shot-selection';
+import type {ShotBrief} from '../../content/shot-brief';
 
-const [episodeId] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const [episodeId] = args;
 if (!episodeId) {
-  console.error('Usage: npm run validate-episode-shots -- <episode-id>');
+  console.error('Usage: npm run validate-episode-shots -- <episode-id> [--shot <shot-id>]');
   process.exit(1);
 }
 
 await loadEpisodeManifest(episodeId);
-const briefs = loadShotBriefs(episodeId);
+const allBriefs = loadShotBriefs(episodeId);
+let briefs: ShotBrief[];
+try {
+  briefs = selectShotBriefs(allBriefs, args);
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
 let failed = false;
 const animationMap = resolve(process.env.CODEX_HOME ?? '', 'plugins', 'cache', 'openai-api-curated', 'hyperframes', 'd416fd5a', 'skills', 'hyperframes', 'scripts', 'animation-map.mjs');
 
@@ -35,4 +45,4 @@ for (const brief of briefs) {
 }
 
 if (failed) process.exit(1);
-console.log(`Shot quality checks passed: ${episodeId}`);
+console.log(`Shot quality checks passed: ${episodeId}${briefs.length < allBriefs.length ? ` (${briefs.map((brief) => brief.id).join(', ')})` : ''}`);

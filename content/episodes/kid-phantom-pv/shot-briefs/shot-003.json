@@ -1,0 +1,65 @@
+{
+    "id":  "shot-003",
+    "sceneId":  "monocle-thread",
+    "title":  "单片眼镜与红线",
+    "narration":  "切进单片眼镜特写，绯红虹膜收缩，五条红线依次贯穿金环。",
+    "visual":  "monocle-thread",
+    "renderer":  "browser",
+    "visualStyle":  "episode-defined",
+    "visualDirection":  {
+                            "composition":  "极端特写正对镜头：金环单片眼镜占满右侧，网点网格铺底，红色细线横向贯穿",
+                            "focalPoint":  "镜片里的绯红虹膜与金环高光",
+                            "hierarchy":  [
+                                              "金环与镜片",
+                                              "绯红虹膜",
+                                              "五条贯穿细线与刻度",
+                                              "网点网格、浮尘与颗粒"
+                                          ],
+                            "palette":  "#07070A 底 / #D4AF6A 金环 / #C81E3A 虹膜与细线 / #EDE7DA 镜面高光",
+                            "typography":  "Cinzel 600 18px 刻度小注，无中文标签",
+                            "texture":  "45% 网点网格底、24% 颗粒、强暗角聚焦镜片"
+                        },
+    "motion":  {
+                   "entrance":  "画面从右侧甩入归位，金环由 1.35 倍压回 1.0",
+                   "transformation":  "虹膜半径 34 到 18 收缩，五条红线依次贯穿并抖动绷直",
+                   "exit":  "整体加速放大 + 白闪，切进绯红满版",
+                   "transition":  "whip-pan",
+                   "pacing":  "fast"
+               },
+    "durationInFrames":  126,
+    "continuity":  {
+                       "leaves":  [
+                                      "monocle-closeup",
+                                      "red-thread",
+                                      "iris-contract"
+                                  ],
+                       "inherits":  [
+                                        "card-burst"
+                                    ]
+                   },
+    "implementation":  {
+                           "sourceRoot":  "html/shot-003",
+                           "output":  {
+                                          "kind":  "mp4",
+                                          "path":  "renders/kid-phantom-pv/shots/shot-003.mp4",
+                                          "width":  1920,
+                                          "height":  1080,
+                                          "fps":  30
+                                      },
+                           "composition":  "asset",
+                           "visualMode":  "html",
+                           "files":  [
+                                         "html/shot-003/index.html"
+                                     ]
+                       },
+    "qualityChecks":  {
+                          "lint":  true,
+                          "validate":  true,
+                          "inspect":  true,
+                          "animationMap":  true,
+                          "strict":  true
+                      },
+    "assets":  [
+
+               ]
+}

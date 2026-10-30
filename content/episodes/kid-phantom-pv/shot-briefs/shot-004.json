@@ -1,0 +1,64 @@
+{
+    "id":  "shot-004",
+    "sceneId":  "crimson-seal",
+    "title":  "绯红落版",
+    "narration":  "披风掠过，画面翻成绯红，两行大字与中文落款砸下。",
+    "visual":  "crimson-seal",
+    "renderer":  "browser",
+    "visualStyle":  "episode-defined",
+    "visualDirection":  {
+                            "composition":  "满版绯红 end card：PHANTOM THIEF 两行巨型拉丁字压在左侧，暗金细框收边，中文怪盗横排左下，圆形印章落在右侧中线",
+                            "focalPoint":  "PHANTOM 与中文怪盗的对位",
+                            "hierarchy":  [
+                                              "PHANTOM THIEF 巨型字",
+                                              "中文落款与印章",
+                                              "暗金细框与小字",
+                                              "披风掠过与颗粒"
+                                          ],
+                            "palette":  "#C81E3A 满版绯红 / #EDE7DA 骨白大字 / #D4AF6A 暗金细框 / #07070A 遮幅与阴影",
+                            "typography":  "Cinzel 700 主行 158px（THIEF 字距 0.40em）+ Noto Serif SC 900 中文 168px 横排 + 印章 76px",
+                            "texture":  "绯红底叠 12% 网点与 24% 颗粒，四角暗角，顶部披风残影"
+                        },
+    "motion":  {
+                   "entrance":  "披风由左向右掠过，把夜蓝瞬间刷成绯红",
+                   "transformation":  "两行字分别从左、右滑入归位，中文落款带红金错位印章砸下",
+                   "exit":  "镜头缓推 1.06 倍后压黑收尾",
+                   "transition":  "hard-cut",
+                   "pacing":  "measured"
+               },
+    "durationInFrames":  168,
+    "continuity":  {
+                       "leaves":  [
+                                      "crimson-endcard",
+                                      "seal-stamp"
+                                  ],
+                       "inherits":  [
+                                        "red-thread"
+                                    ]
+                   },
+    "implementation":  {
+                           "sourceRoot":  "html/shot-004",
+                           "output":  {
+                                          "kind":  "mp4",
+                                          "path":  "renders/kid-phantom-pv/shots/shot-004.mp4",
+                                          "width":  1920,
+                                          "height":  1080,
+                                          "fps":  30
+                                      },
+                           "composition":  "asset",
+                           "visualMode":  "html",
+                           "files":  [
+                                         "html/shot-004/index.html"
+                                     ]
+                       },
+    "qualityChecks":  {
+                          "lint":  true,
+                          "validate":  true,
+                          "inspect":  true,
+                          "animationMap":  true,
+                          "strict":  true
+                      },
+    "assets":  [
+
+               ]
+}

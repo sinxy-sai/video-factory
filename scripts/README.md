@@ -11,7 +11,7 @@ Use the npm scripts in `package.json` instead of calling files by path. This kee
 ## Command groups
 
 - **Project setup:** `doctor`, `setup:python`, `check-agent-harness`, `sync-agent-harness-skill`
-- **Episode planning:** `create-episode`, `validate-episode-planning`, `author-episode-shots`
+- **Episode planning:** `create-episode`, `validate-episode-planning`, `approve-episode`, `episode-status`, `author-episode-shots`
 - **Shot routing:** `validate-episode-shots`, `preview-episode-shots`, `render-episode-shots`
 - **Asset and episode output:** `prepare-episode-assets`, `validate-episode`, `preview-episode`, `render-still-frame`, `render-episode`, `verify-episode-output`
 - **Maintenance:** `generate-episode-registry`, `validate-all-episodes`, `remove-episode`, `generate-contact-sheet`, `compare-episode-visual-regression`

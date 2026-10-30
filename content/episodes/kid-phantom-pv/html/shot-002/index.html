@@ -1,0 +1,289 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>kid-phantom-pv shot-002</title>
+<script src="assets/gsap.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #07070A; }
+  * { box-sizing: border-box; }
+  [data-composition-id="shot-002"] {
+    position: relative; width: 100%; height: 100%; overflow: hidden;
+    background: #07070A; color: #EDE7DA;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+  }
+  .scene { position: absolute; inset: 0; overflow: hidden; }
+  .frame { position: absolute; inset: 0; transform-origin: 50% 46%; }
+  .frame-snap { position: absolute; inset: 0; transform-origin: 50% 60%; }
+
+  #bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 58% 46% at 50% 54%, #1a1220 0%, #120c16 26%, #0a0810 56%, #07070A 100%);
+  }
+  #smoke { position: absolute; inset: 0; }
+  .puff {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(237,231,218,0.16) 0%, rgba(237,231,218,0.06) 42%, rgba(237,231,218,0) 72%);
+    filter: blur(28px);
+  }
+  .puff-crimson {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,30,58,0.24) 0%, rgba(200,30,58,0.07) 46%, rgba(200,30,58,0) 74%);
+    filter: blur(40px);
+  }
+
+  /* ---------- playing cards ---------- */
+  #cards { position: absolute; inset: 0; }
+  .card { position: absolute; left: 960px; top: 470px; width: 104px; height: 150px; margin: -75px 0 0 -52px; }
+  .card-face {
+    position: absolute; inset: 0; border-radius: 7px;
+    background: linear-gradient(160deg, #0d0d14 0%, #08080d 58%, #101019 100%);
+    border: 1.6px solid rgba(212,175,106,0.82);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.65), inset 0 0 0 3px rgba(7,7,10,0.9), inset 0 0 0 4px rgba(212,175,106,0.32);
+  }
+  .card-face svg { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; }
+  .pip-bone { fill: #EDE7DA; }
+  .pip-red { fill: #C81E3A; }
+  .card-corner { position: absolute; font-family: "Cinzel", serif; font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+  .corner-tl { left: 9px; top: 6px; }
+  .corner-br { right: 9px; bottom: 5px; }
+  .dot { display: block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.85; }
+  .tone-bone { color: #EDE7DA; }
+  .tone-red { color: #C81E3A; }
+
+  /* ---------- type ---------- */
+  #typeBlock { position: absolute; left: 0; right: 0; bottom: 214px; text-align: center; }
+  #kicker {
+    display: block; font-family: "Cinzel", serif; font-size: 34px; font-weight: 600;
+    letter-spacing: 0.62em; color: #D4AF6A; text-indent: 0.62em;
+  }
+  #bigWord {
+    position: relative; z-index: 2;
+    display: block; margin-top: 10px;
+    font-family: "Cinzel", serif; font-size: 430px; font-weight: 900; line-height: 0.86;
+    letter-spacing: 0.02em; color: #EDE7DA;
+    text-shadow: 0 0 90px rgba(237,231,218,0.22);
+  }
+  #bigWordGhost {
+    display: block; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+    font-family: "Cinzel", serif; font-size: 430px; font-weight: 900; line-height: 0.86;
+    letter-spacing: 0.02em; color: #C81E3A; opacity: 0.5;
+  }
+  #ruleBar { position: absolute; left: 50%; bottom: 186px; width: 880px; height: 2px; margin-left: -440px; background: linear-gradient(to right, rgba(212,175,106,0), #D4AF6A 18%, #D4AF6A 82%, rgba(212,175,106,0)); transform-origin: 50% 50%; }
+  #micro { position: absolute; left: 0; right: 0; bottom: 140px; text-align: center; font-family: "Cinzel", serif; font-size: 19px; font-weight: 600; letter-spacing: 0.46em; color: rgba(237,231,218,0.6); text-indent: 0.46em; }
+
+  /* ---------- type layer above the grade ---------- */
+  .type-layer { position: absolute; inset: 0; z-index: 25; }
+
+  /* ---------- grade overlays / flashes ---------- */
+  #flash { position: absolute; inset: 0; background: #FFFDF7; }
+  #slash { position: absolute; left: -200px; top: 0; width: 420px; height: 100%; background: linear-gradient(90deg, rgba(237,231,218,0) 0%, rgba(237,231,218,0.10) 46%, rgba(237,231,218,0.22) 54%, rgba(237,231,218,0) 100%); mix-blend-mode: screen; opacity: 0; }
+  #printHalftone {
+    position: absolute; inset: 0; opacity: 0.10; mix-blend-mode: overlay;
+    background-image:
+      radial-gradient(circle, rgba(237,231,218,0.85) 0.9px, rgba(237,231,218,0) 1.4px),
+      radial-gradient(circle, rgba(237,231,218,0.45) 1.4px, rgba(237,231,218,0) 2px);
+    background-size: 6px 6px, 13px 13px; background-position: 0 0, 3px 4px;
+  }
+  #filmGrain { position: absolute; inset: 0; opacity: 0.23; mix-blend-mode: overlay; background-repeat: repeat; background-size: 256px 256px; }
+  #vignettePlate {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 58% 52% at 50% 48%, rgba(7,7,10,0) 26%, rgba(7,7,10,0.46) 68%, rgba(7,7,10,0.96) 100%),
+      linear-gradient(to bottom, rgba(7,7,10,0.72) 0%, rgba(7,7,10,0) 22%, rgba(7,7,10,0) 64%, rgba(7,7,10,0.86) 100%);
+  }
+  .bar { position: absolute; left: 0; width: 100%; height: 82px; background: #07070A; z-index: 30; }
+  .bar-top { top: 0; box-shadow: 0 3px 16px rgba(7,7,10,0.95); }
+  .bar-bot { bottom: 0; box-shadow: 0 -3px 16px rgba(7,7,10,0.95); }
+</style>
+</head>
+<body>
+<div data-composition-id="shot-002" data-width="1920" data-height="1080" data-duration="5.4" data-start="0">
+  <div class="scene" data-layout-allow-overflow data-layout-allow-occlusion>
+    <div class="frame">
+      <div class="frame-snap">
+        <div id="bg"></div>
+        <div id="smoke"></div>
+
+        <div id="cards"></div>
+
+        <div id="slash"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="type-layer">
+    <div id="typeBlock" data-layout-allow-overlap>
+      <span id="kicker">PHANTOM</span>
+      <span id="bigWord">KID</span>
+      <span id="bigWordGhost" aria-hidden="true">KID</span>
+    </div>
+    <div id="ruleBar"></div>
+    <div id="micro">NOTICE OF ARRIVAL</div>
+  </div>
+
+  <div id="flash" class="clip" data-start="0" data-duration="5.4" data-track-index="6"></div>
+  <div id="printHalftone" class="clip" data-start="0" data-duration="5.4" data-track-index="8"></div>
+  <div id="filmGrain" class="clip" data-start="0" data-duration="5.4" data-track-index="9"></div>
+  <div id="vignettePlate" class="clip" data-start="0" data-duration="5.4" data-track-index="10"></div>
+
+  <span class="bar bar-top"></span>
+  <span class="bar bar-bot"></span>
+</div>
+
+<script>
+(function () {
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var rng = mulberry32(70412);
+
+  var SUITS = {
+    spade: 'M32 8 C24 22 10 30 10 42 C10 52 18 58 25 58 C28 58 30 57 32 55 C34 57 36 58 39 58 C46 58 54 52 54 42 C54 30 40 22 32 8 Z M29 50 C26 56 22 62 18 66 L46 66 C42 62 38 56 35 50 Z',
+    heart: 'M32 58 C22 48 8 38 8 26 C8 16 16 9 24 9 C28 9 31 11 32 14 C33 11 36 9 40 9 C48 9 56 16 56 26 C56 38 42 48 32 58 Z',
+    diamond: 'M32 6 L54 32 L32 58 L10 32 Z',
+    club: 'M32 8 C26 8 21 13 21 19 C21 22 22 24 24 26 C20 25 15 27 13 31 C11 37 15 43 21 43 C24 43 26 42 27 40 C26 46 23 52 18 58 L46 58 C41 52 38 46 37 40 C38 42 40 43 43 43 C49 43 53 37 51 31 C49 27 44 25 40 26 C42 24 43 22 43 19 C43 13 38 8 32 8 Z'
+  };
+
+  // deterministic burst layout: each card owns a direction, distance and spin
+  var cardSpec = [
+    {suit: 'spade', red: false, face: 'A', angle: -172, dist: 900, rot: -38, scale: 1.32, z: 3},
+    {suit: 'heart', red: true, face: 'K', angle: -138, dist: 760, rot: 26, scale: 1.05, z: 2},
+    {suit: 'club', red: false, face: 'Q', angle: -104, dist: 880, rot: -22, scale: 1.18, z: 1},
+    {suit: 'diamond', red: true, face: 'J', angle: -72, dist: 700, rot: 44, scale: 0.92, z: 2},
+    {suit: 'spade', red: false, face: '9', angle: -36, dist: 830, rot: 18, scale: 1.1, z: 1},
+    {suit: 'heart', red: true, face: '7', angle: -8, dist: 640, rot: -30, scale: 0.86, z: 3},
+    {suit: 'club', red: false, face: 'A', angle: 24, dist: 900, rot: 52, scale: 1.24, z: 1},
+    {suit: 'diamond', red: true, face: 'K', angle: 58, dist: 780, rot: -16, scale: 1.0, z: 2},
+    {suit: 'spade', red: false, face: 'J', angle: 94, dist: 860, rot: 34, scale: 1.14, z: 3},
+    {suit: 'heart', red: true, face: 'Q', angle: 128, dist: 720, rot: -44, scale: 0.94, z: 1},
+    {suit: 'club', red: false, face: '8', angle: 160, dist: 880, rot: 12, scale: 1.2, z: 2},
+    {suit: 'diamond', red: true, face: 'A', angle: -156, dist: 560, rot: 60, scale: 1.44, z: 4},
+    {suit: 'heart', red: true, face: 'J', angle: 40, dist: 520, rot: -58, scale: 1.5, z: 4},
+    {suit: 'spade', red: false, face: 'K', angle: 108, dist: 560, rot: 28, scale: 1.4, z: 4}
+  ];
+
+  var cardsRoot = document.getElementById('cards');
+  var cardNodes = [];
+  for (var i = 0; i < cardSpec.length; i++) {
+    var spec = cardSpec[i];
+    var el = document.createElement('div');
+    el.className = 'card';
+    el.style.zIndex = String(spec.z);
+
+    var face = document.createElement('div');
+    face.className = 'card-face';
+    var tone = spec.red ? 'pip-red' : 'pip-bone';
+    face.innerHTML =
+      '<svg viewBox="0 0 64 72" aria-hidden="true"><path class="' + tone + '" d="' + SUITS[spec.suit] + '"/></svg>' +
+      '<span class="card-corner corner-tl ' + (spec.red ? 'tone-red' : 'tone-bone') + '"><i class="dot"></i></span>' +
+      '<span class="card-corner corner-br ' + (spec.red ? 'tone-red' : 'tone-bone') + '"><i class="dot"></i></span>';
+    el.appendChild(face);
+
+    var rad = (spec.angle * Math.PI) / 180;
+    var dx = Math.cos(rad) * spec.dist;
+    var dy = Math.sin(rad) * spec.dist * 0.72;
+
+    cardNodes.push({node: el, dx: dx, dy: dy, rot: spec.rot, scale: spec.scale, index: i});
+    cardsRoot.appendChild(el);
+  }
+
+  // smoke puffs (deterministic placement)
+  var smoke = document.getElementById('smoke');
+  var puffs = [];
+  for (var p = 0; p < 7; p++) {
+    var puff = document.createElement('div');
+    puff.className = p % 3 === 0 ? 'puff-crimson' : 'puff';
+    var size = 420 + rng() * 420;
+    puff.style.width = size.toFixed(0) + 'px';
+    puff.style.height = (size * (0.7 + rng() * 0.5)).toFixed(0) + 'px';
+    puff.style.left = (300 + rng() * 1320).toFixed(0) + 'px';
+    puff.style.top = (240 + rng() * 640).toFixed(0) + 'px';
+    puffs.push({node: puff, drift: (rng() - 0.5) * 120, rise: -60 - rng() * 90});
+    smoke.appendChild(puff);
+  }
+
+  // film grain tile
+  var tile = document.createElement('canvas');
+  tile.width = 256; tile.height = 256;
+  var ctx = tile.getContext('2d');
+  var img = ctx.createImageData(256, 256);
+  for (var q = 0; q < img.data.length; q += 4) {
+    var v = Math.floor(rng() * 255);
+    img.data[q] = v; img.data[q + 1] = v; img.data[q + 2] = v;
+    img.data[q + 3] = Math.floor(rng() * 105);
+  }
+  ctx.putImageData(img, 0, 0);
+  document.getElementById('filmGrain').style.backgroundImage = 'url(' + tile.toDataURL('image/png') + ')';
+
+  var tl = gsap.timeline({ paused: true });
+
+  // 1. white flash into black
+  tl.fromTo('#flash', { opacity: 1 }, { opacity: 0, duration: 0.26, ease: 'power2.in' }, 0);
+  tl.fromTo('#bg', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0);
+
+  // 2. smoke bloom
+  for (var s = 0; s < puffs.length; s++) {
+    tl.fromTo(puffs[s].node, { opacity: 0, scale: 0.55 }, { opacity: 0.9, scale: 1, duration: 1.4, ease: 'power2.out' }, 0.1 + s * 0.05);
+  }
+
+  // 3. card burst
+  for (var c = 0; c < cardNodes.length; c++) {
+    var card = cardNodes[c];
+    tl.fromTo(card.node,
+      { x: 0, y: 0, rotate: 0, scale: 0.24, opacity: 0 },
+      { x: card.dx, y: card.dy, rotate: card.rot, scale: card.scale, opacity: 1, duration: 0.85, ease: 'power3.out' },
+      0.16 + c * 0.026);
+    tl.to(card.node, { y: card.dy + 60, rotate: card.rot + (c % 2 === 0 ? 14 : -14), duration: 3.4, ease: 'none' }, 1.1 + c * 0.02);
+  }
+  for (var s2 = 0; s2 < puffs.length; s2++) {
+    tl.to(puffs[s2].node, { x: puffs[s2].drift, y: puffs[s2].rise, duration: 4.6, ease: 'none' }, 0.9 + s2 * 0.06);
+  }
+
+  // 4. the name lands
+  tl.fromTo('#bigWord',
+    { opacity: 0, scale: 1.55, y: 90 },
+    { opacity: 1, scale: 1, y: 0, duration: 0.62, ease: 'power4.out' }, 1.28);
+  tl.fromTo('#bigWordGhost',
+    { opacity: 0, scale: 1.55, x: 60, y: 96 },
+    { opacity: 0.62, scale: 1, x: 16, y: 10, duration: 0.62, ease: 'power4.out' }, 1.32);
+  tl.fromTo('#kicker',
+    { opacity: 0, y: -26 },
+    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.72);
+  tl.fromTo('#ruleBar', { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.7, ease: 'power3.inOut' }, 2.15);
+  tl.fromTo('#micro', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' }, 2.45);
+
+  // 5. camera: punch in on the burst, then a slow creep
+  tl.fromTo('.frame', { scale: 1.07 }, { scale: 1, duration: 0.7, ease: 'power3.out' }, 0);
+  tl.to('.frame', { scale: 1.06, duration: 4.6, ease: 'none' }, 0.7);
+  tl.fromTo('.frame-snap', { scale: 1 }, { scale: 1.035, duration: 0.28, ease: 'power4.out' }, 1.3);
+
+  // 6. light slash sweep
+  tl.fromTo('#slash', { opacity: 0, x: -200 }, { opacity: 1, duration: 0.5, ease: 'power1.out' }, 3.35);
+  tl.to('#slash', { x: 2100, duration: 0.9, ease: 'power2.inOut' }, 3.35);
+  tl.to('#slash', { opacity: 0, duration: 0.35, ease: 'power1.in' }, 3.95);
+
+  // 7. grain flicker
+  for (var g = 0; g < 64; g++) {
+    var gx = Math.floor(rng() * 256);
+    var gy = Math.floor(rng() * 256);
+    tl.set('#filmGrain', { backgroundPosition: gx + 'px ' + gy + 'px' }, g * 0.083);
+  }
+
+  window.__timelines['shot-002'] = tl;
+})();
+</script>
+</div>
+</body>
+</html>
