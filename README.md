@@ -1,172 +1,225 @@
-# Science Video Factory
+<div align="center">
 
-> 打开目录，对 AI 说一个视频主题，它就能从创意一路做到成片的 **AI 视频工作流引擎**。
+# Video Factory
 
-Science Video Factory 把「浏览器镜头 + 代码动画 + 总合成 + 字幕 + 编码」串成一条 AI 可以独立走完的生产管线。镜头用 HTML/CSS/SVG/Canvas/Three.js 编写，由 **HyperFrames** 检查、预览和渲染；**GSAP** 负责镜头内的确定性动效；**Remotion** 负责 episode 时间轴、字幕、转场和最终合成；**FFmpeg** 负责图层合成、编码与封装；数学、几何、公式镜头可以交给 **Manim**（可选，项目内 `.venv`）。
+**把一个视频主题，交给 AI，从创意简报一路推进到可交付成片。**
 
-一条视频就是 `content/episodes/<id>/` 下的自包含模块：剧本、分镜、逐镜契约、镜头源码、manifest 和素材都在里面。`renders/<id>/final.mp4` 是唯一标准输出。
+<a href="https://github.com/sinxy-sai/video-factory"><img src="https://img.shields.io/badge/GitHub-video--factory-181717?style=flat-square&logo=github" alt="GitHub repository"></a>
+<a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20 or later"></a>
+<a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"></a>
+<a href="https://www.remotion.dev/"><img src="https://img.shields.io/badge/Remotion-4.x-0B0B0B?style=flat-square" alt="Remotion 4"></a>
+<a href="https://hyperframes.heygen.com/"><img src="https://img.shields.io/badge/HyperFrames-HTML%20shots-6E56CF?style=flat-square" alt="HyperFrames"></a>
+<a href="LICENSE"><img src="https://img.shields.io/github/license/sinxy-sai/video-factory.svg?style=flat-square" alt="MIT License"></a>
 
-## 两种模式
+[快速开始](#quick-start) · [模板画廊](#visual-system-gallery) · [工作流](#production-pipeline) · [文档](#documentation-map) · [更新记录](CHANGELOG.md)
 
-| 模式 | 时长 | 字幕 | 适用场景 | 生产重心 |
-|---|---|---|---|---|
-| **explainer** 科普 / 知识 | 40–90 s | 必须 | B 站/YouTube 科普、知识解释、原理拆解 | 每镜一个知识关系；机制、因果、对比清楚 |
-| **cinematic** 视觉 PV | 15–30 s | 可选 / 可无 | 开场片头、预告、品牌 PV、社媒氛围片 | motion-first：大字、硬切、光照、氛围、节奏 |
+</div>
 
-模式不是配置项，而是 AI 读完需求后的第一判断。画幅支持横屏 1920×1080 与竖屏（由 manifest 的 `format` / `width` / `height` 决定），默认 30 fps。
+<p align="center">
+  <img src="docs/assets/sample-kid-phantom.png" alt="Kid Phantom cinematic sample contact sheet" width="860">
+</p>
 
-## 两支自举样片
+## Overview
 
-项目用自己的流程做样片，验证「AI 能不能独立做出有质感的片子」：
+Video Factory 是一个面向 AI 编码工具的视频工作流引擎。打开仓库，对 AI 说出主题、受众、时长和平台，它会把需求拆成内容计划、视觉方向、逐镜设计、确定性动画、字幕和最终合成。
 
-| 样片 | 模式 | 内容 | 目标产物（完成后位置） |
-|---|---|---|---|
-| Transformer 注意力机制 | explainer | 一条讲清 Q/K/V、注意力权重与多头机制的科普片 | `renders/transformer-attention/final.mp4` |
-| 怪盗月夜 20s PV | cinematic | 月夜黑色电影 + 漫画印刷质感的原创视觉 PV，无字幕 | `renders/kid-phantom-pv/final.mp4` |
+项目把浏览器镜头、代码动画、总合成和编码连接成一条可验证的生产链：HyperFrames 负责逐帧 HTML 镜头，GSAP 负责镜头内时间轴，Remotion 负责 episode 时间轴与字幕，FFmpeg 负责图层合成和封装，Manim 可选用于公式、几何和矩阵镜头。
 
-两支样片的目标产物如下；成片是否就绪以对应路径为准（制作中时该文件尚未生成）。README 暂不放置截图，避免展示未完成的中间帧。另有 `renders/smoke-test/final.mp4` 用于验证渲染管线本身是否健康，不代表视觉水准。
+> **One topic in, one reproducible video out.**
 
-## 5 分钟上手
+## What it produces
 
-环境要求：Node.js ≥ 20（仓库在 Node 24 / Windows 上验证），首次渲染会自动下载 Remotion 的 Chrome Headless Shell。
+| 模式 | 时长 | 字幕 | 适用场景 |
+| --- | ---: | --- | --- |
+| **explainer** | 40–90 s | 必须 | 知识解释、机制拆解、因果关系、对比分析 |
+| **cinematic** | 15–30 s | 可选 | 视觉 PV、片头、预告、品牌氛围片 |
+
+标准输出为：
+
+```text
+renders/<episode-id>/final.mp4
+renders/<episode-id>/final.manifest.json
+renders/<episode-id>/output-verification.json
+```
+
+## Why this workflow
+
+- **AI-native**：根目录的 `AGENTS.md` / `CLAUDE.md` 把制作流程写成 AI 可以执行的生产合同。
+- **Art-directed**：四套命名美术系统、构图原型、字号阶、色板和材质规则，帮助镜头保持统一风格。
+- **Hero frame first**：先做静态画面，再绑定时间轴和动画，避免“能动但不好看”。
+- **Deterministic**：所有状态由帧时间驱动，禁止 `Date.now()`、未播种随机和 hover 依赖。
+- **Quality gates**：规划审批、ShotBrief、HyperFrames strict check、字幕覆盖、素材准备和 FFprobe 输出验证逐层把关。
+- **Renderer routing**：浏览器、Manim 和分层合成按镜头需求路由，Remotion 只负责总合成。
+
+## Visual system gallery
+
+四套美术系统都提供可复制的 HyperFrames 模板。每套模板都有自己的构图、材质、字体和运动语言。
+
+<table>
+  <tr>
+    <td width="50%"><strong>A · 深空天文台</strong><br>冷青辉光、轨道、科研仪器<br><a href="docs/assets/template-deep-space.jpg"><img src="docs/assets/template-deep-space.jpg" alt="深空天文台模板：0.4、4、7.4 秒接触表"></a><br><a href="templates/shot-starter/DESIGN.md">shot-starter · 设计说明</a></td>
+    <td width="50%"><strong>B · 月夜怪盗</strong><br>月光、黑色电影、斜切、预告函<br><a href="docs/assets/template-noir.jpg"><img src="docs/assets/template-noir.jpg" alt="月夜怪盗模板：0.4、4、7.4 秒接触表"></a><br><a href="templates/shot-starter-noir/DESIGN.md">shot-starter-noir · 设计说明</a></td>
+  </tr>
+  <tr>
+    <td><strong>C · 纸本编辑</strong><br>博物馆图版、线刻、纸张、朱批<br><a href="docs/assets/template-editorial.jpg"><img src="docs/assets/template-editorial.jpg" alt="纸本编辑模板：0.4、4、7.4 秒接触表"></a><br><a href="templates/shot-starter-editorial/DESIGN.md">shot-starter-editorial · 设计说明</a></td>
+    <td><strong>D · 霓虹东京</strong><br>透视走廊、HUD、热区矩阵<br><a href="docs/assets/template-neon.jpg"><img src="docs/assets/template-neon.jpg" alt="霓虹东京模板：0.4、4、7.4 秒接触表"></a><br><a href="templates/shot-starter-neon/DESIGN.md">shot-starter-neon · 设计说明</a></td>
+  </tr>
+</table>
+
+以上均为实际模板渲染截图，依次采样 0.4、4、7.4 秒；点击图片查看大图。模板中的数值用于版式与动效演示，不代表真实测量。
+
+复制一个模板后，替换短标签、主体几何和节拍即可：
+
+```powershell
+Copy-Item templates/shot-starter-editorial -Destination content/episodes/<id>/html/<shot-id> -Recurse
+npx hyperframes check content/episodes/<id>/html/<shot-id> --strict
+```
+
+## Sample work
+
+### Kid Phantom · 20-second cinematic PV
+
+原创月夜黑色电影视觉 PV，使用系统 B，四镜、无字幕、1920×1080、30 fps。接触表展示了从月夜建立到标题落定的节奏变化。
+
+![Kid Phantom sample](docs/assets/sample-kid-phantom.png)
+
+## Quick start
+
+环境要求：Node.js 20+。项目优先使用本地 `.venv`、`tools/ffmpeg/bin` 和 HyperFrames 运行时，不要求系统 PATH 中预装 Python、Manim 或 FFmpeg。
 
 ```powershell
 git clone https://github.com/sinxy-sai/video-factory.git
 cd video-factory
-
 npm install
-npm run doctor          # 依赖体检：本地 .venv / tools/ffmpeg / Chrome
+npm run doctor
 npm run check-agent-harness
-npm run setup:python    # 可选：只有要用 Manim 时才需要
 ```
 
-建一个空白 episode：
+`npm install` 安装 JavaScript 依赖。FFmpeg / FFprobe 需另行放入 `tools/ffmpeg/bin/`，不会随 Git 克隆或 npm 安装自动提供。当前 `doctor` 还会检查 `.venv` 中的 Python / Manim；可用下面的 `setup:python` 配置它们。首次 Remotion 渲染可能下载 Chrome Headless Shell，字体加载也需要网络。
+
+创建一个新 episode：
 
 ```powershell
 npm run create-episode -- my-video
 ```
 
-然后用任意 AI 编码工具（Claude Code / Codex / 其他支持 AGENTS.md 的 agent）打开这个目录，直接说需求。AI 会读 `AGENTS.md` → `skills/science-video-workflow/SKILL.md` → 文档与美术规范，然后自己推进。
-
-依赖查找优先使用项目内的 `.venv` 与 `tools/ffmpeg/bin`，不要求系统 PATH 配好 Python/Manim/FFmpeg。
-
-## 对 AI 说
-
-不需要记命令，把主题、受众、时长、画幅、平台说清楚即可：
-
-- 「帮我做一支 60 秒的 Transformer 注意力机制科普视频，B 站横屏」
-- 「做一条 20 秒的怪盗月夜风格视觉 PV，无旁白，抖音竖屏」
-- 「把这篇论文做成 90 秒科普短片，受众是高中生，要中文字幕」
-- 「给我们的开源项目做一支 15 秒开场片头，深空天文台风格」
-
-AI 会自动走完：**创意简报 → 3 个概念方向 → hero frame（静态帧先行）→ animatic（时间轴/字幕）→ 逐镜制作 → QC 与交付**，并在模式、受众、事实边界、品牌素材、是否要旁白这些问题上主动问你。质量底线、禁止事项和交付标准写在根目录 `AGENTS.md`（与 `CLAUDE.md` 内容一致）里。
-
-## 命令
-
-主链路（`<id>` 为 episode id，如 `my-video`）：
-
-| 阶段 | 命令 |
-|---|---|
-| 新建 / 删除 | `npm run create-episode -- <id>` · `npm run remove-episode -- <id>` |
-| 规划批准 / 校验 | `npm run approve-episode -- <id>`（新增）· `npm run validate-episode-planning -- <id>` |
-| 生成镜头工作区 | `npm run author-episode-shots -- <id>` |
-| 镜头校验 / 预览 / 渲染 | `npm run validate-episode-shots -- <id>` · `npm run preview-episode-shots -- <id> [--shot <shot-id>]` · `npm run render-episode-shots -- <id> [--shot <shot-id>]` |
-| 资产准备 | `npm run prepare-episode-assets -- <id>` |
-| 整集校验 | `npm run validate-episode -- <id>` · `npm run validate-all-episodes` |
-| 节奏预览 / 单帧 | `npm run preview-episode -- <id>` · `npm run render-still-frame -- <id> --frame 30` |
-| 成片渲染 | `npm run render-episode -- <id>` |
-| 审片与验证 | `npm run generate-contact-sheet -- <id>` · `npm run compare-episode-visual-regression -- <id>` · `npm run verify-episode-output -- <id>` |
-| 工程维护 | `npm run doctor` · `npm run setup:python` · `npm run generate-episode-registry` · `npm run test` |
-| Harness 同步 | `npm run sync-agent-harness-skill` · `npm run check-agent-harness` |
-
-`remove-episode` 只清理该 episode 自己的目录与产物（`content/episodes/<id>/`、`renders/<id>/`、`static/episodes/<id>/`、`.remotion/<id>.props.json`、对应的 `styles/<id>/`），不会动共享依赖或工具。
-
-### AI 快速迭代命令（本版新增）
-
-| 命令 | 作用 |
-|---|---|
-| `npm run approve-episode -- <id> [--state <state>]` | 校验并批准 `content-plan.md` / `shot-design.md`，一次写全 front matter（默认 `shot-design-approved`） |
-| `npm run episode-status -- <id>` | 输出规划/分镜/镜头/素材/渲染/输出的 checklist 与下一条应执行命令，供 AI 自主推进 |
-| 单镜迭代（新增 `--shot`） | `npm run validate-episode-shots -- <id> --shot <shot-id>`、`npm run preview-episode-shots -- <id> --shot <shot-id>`、`npm run render-episode-shots -- <id> --shot <shot-id>`，渲染长片时不必反复跑全量 |
-
-## 工作流
-
-1. **Brief**：确认模式、画幅、时长、受众、事实与资料来源，写进 `content-plan.md`。
-2. **Creative direction**：从 `docs/ART_DIRECTION.md` 选一套命名美术系统，写 `visual-style.md` 与每镜视觉方向；给出 3 个概念方向并推荐一个。
-3. **Hero frames**：先做静态画面，截图检查构图、景深、字体层级、安全区，再上动效。
-4. **Animatic**：定 `manifest.ts` 的 scenes/beats/captions、`episode.ts` 的视觉枚举、每镜 `ShotBrief`，跑通时长与连续性。
-5. **Shots**：逐镜编写 `html/<shot-id>/`（或 Manim / 分层合成），每镜过 `npx hyperframes check --strict`。
-6. **QC & Delivery**：`prepare-episode-assets` → `validate-episode` → `render-episode` → 接触表/单帧复核 → `verify-episode-output`。
-
-规划文档必须先批准才能写镜头源码：`approve-episode` 会先校验内容再写入 front matter（`state: shot-design-approved` + 三项 approvals），之后 `validate-episode-planning` 才会通过。不确定进度时用 `episode-status` 看 checklist 和下一条命令。
-
-完整的阶段验收标准与质量 rubric 见 `skills/science-video-workflow/SKILL.md`。
-
-## 质量体系
-
-过去「模型画出来的东西很平庸」的根因不是技术栈，而是缺少美术指导和质量门禁。本版补上三层：
-
-- **美术方向**：`docs/ART_DIRECTION.md`（本版新增）提供 4 套命名美术系统（深空天文台 / 月夜怪盗 / 纸本编辑 / 霓虹东京），每套有精确色板、1080p 字号阶、网格与安全区、材质颗粒配方、镜头语言，以及 12 种构图原型和「反 PPT 清单」。
-- **镜头模板**：`templates/shot-starter/`（深空天文台）、`templates/shot-starter-noir/`（月夜怪盗）、`templates/shot-starter-editorial/`（纸本编辑 / 博物馆）与 `templates/shot-starter-neon/`（霓虹东京 / 科技）是可复制的 HyperFrames 镜头骨架，自带多层背景、字体系统、GSAP seekable timeline、`window.__timelines` 注册，并且已通过 `npx hyperframes check --strict`。
-- **质量门禁**：`docs/QUALITY.md`（本版新增）给出「三点截图法」（首帧/中段/尾帧）和分门别类的镜头 QC 清单；所有 browser 镜头过 `npx hyperframes check --strict`，整集过 `validate-episode`（ShotBrief/manifest/连续性/字幕覆盖/文字归属），最后用 contact sheet 与三点截图复核。
-
-硬规则（会被校验强制）：标题、镜号、完整字幕不得画进镜头；旁白/字幕/未来配音共用同一 scene-relative 帧轴；渲染必须确定性可复现；`render-episode` 只接受 `--scale 1`，输出固定为 `renders/<id>/final.mp4`。
-
-## 技术栈
-
-| 层 | 技术 | 职责 |
-|---|---|---|
-| 镜头画面 | HTML/CSS/JS、SVG、Canvas 2D、Three.js/WebGL | 布局、图示、粒子、3D、着色器 |
-| 镜头动效 | GSAP + HyperFrames `hf-seek` | 确定性时间轴、缓动、stagger、路径 |
-| 数学镜头 | Manim（可选，项目 `.venv`） | 公式、几何、向量、矩阵 |
-| 总合成 | Remotion | episode 时间轴、字幕、转场、镜头资产合成 |
-| 合成 / 编码 | FFmpeg / FFprobe（`tools/ffmpeg`） | 图层叠加、编码、封装、metadata |
-
-## 目录
+然后在支持 `AGENTS.md` 的 AI 编码工具中打开仓库，直接说：
 
 ```text
-content/episodes/<id>/     # 一条视频：计划、剧本、分镜、ShotBrief、html/manim 镜头、素材
-  manifest.ts              # 场景、时长、beats、字幕
-  episode.ts               # 本地视觉枚举与 schema
-  shot-briefs/shot-NNN.json# 逐镜契约（renderer / 连续性 / 实现文件 / 输出）
-  html/<shot-id>/          # 浏览器镜头源码（DESIGN.md + index.html + assets）
-  manim/<shot-id>/         # Manim 镜头源码（可选）
-src/                       # Remotion 合成、字幕层、镜头资产承载组件
-scripts/                   # create/validate/preview/render/verify 等命令与库
-production/                # 渲染路由、镜头契约、图层合成、视觉回归
-docs/                      # WORKFLOW / SCENE_GUIDE / COMPONENT_GUIDE / ART_DIRECTION / QUALITY
-skills/science-video-workflow/SKILL.md   # 生产 playbook 规范源
-.agents/.claude/.codex/    # 三个 harness 的同步副本（内容必须一致）
-templates/                 # 四套美术系统镜头骨架 A/B/C/D（shot-starter{,-noir,-editorial,-neon}）
-renders/<id>/              # final.mp4 + final.manifest.json + 镜头资产 + 接触表
-static/episodes/<id>/      # 由脚本生成的 Remotion 运行时静态资源
-tools/ffmpeg/              # 项目内 FFmpeg / FFprobe
+做一支 60 秒、横屏、带中文字幕的 Transformer 注意力机制科普视频，面向 B 站观众。
 ```
 
-## 契约速览
-
-- **manifest.ts**：`id`、`title`、`language`、`format`/`width`/`height`/`fps`、`theme`、`scenes[]`。每个 scene 有 `id`、`title`、`claim`、`visual`、`durationInFrames`、`beats`、`captions`。
-- **episode.ts**：用本地 `z.enum([...])` 声明本集视觉类型；它只做分类校验，不会自动绘制组件。
-- **ShotBrief**：每个 scene 一个 `shot-briefs/shot-NNN.json`，声明 `sceneId`、`durationInFrames`（必须等于场景时长）、`renderer`（`browser`/`manim`/`composite`/`blender`）、`visualStyle`（当前固定 `episode-defined`）、`visualDirection`、`motion`、`continuity`、`implementation`、`qualityChecks`、`assets`。
-- **字幕**：scene-relative 帧号写在 manifest `captions`，由 Remotion 统一渲染；explainer 默认要求字幕覆盖 ≥80% 镜头时长，cinematic 可在 scene 上用 `captionMode: 'optional' | 'none'` 放宽或关闭（本版新增）。
-- **确定性**：任何一帧都必须能从时间轴重建，禁止 `Date.now()`、未播种随机和 hover 依赖。
-
-## 已知限制
-
-- **没有自动配音 / 配乐 / 音效**：旁白目前是文本与字幕时间轴，尚未生成音频；未来的 voiceover cue 必须复用字幕的帧轴，不另起一套时间轴。
-- **字体依赖回退**：模板优先使用 Google Fonts 在线拉取；离线或网络受限时回退到系统字体（中文思源 / Noto 系列），字重和字宽可能与设计稿有差异。
-- **主要面向 Windows 验证**：脚本已做跨平台路径处理，CI 在 Linux 上跑 `npm test`，但实际渲染与样片验证主要在 Windows 完成；其他平台首次运行请先 `npm run doctor`。
-- **Manim 可选**：未安装 `.venv` 时 Manim 镜头不可用；Blender 只有契约、没有执行器，会明确失败。
-- **视觉质量仍取决于执行与审片**：`check`/`validate` 是底线门禁，不能替代对首帧、中段、尾帧和 contact sheet 的实际查看。
-- **首次渲染较慢**：Remotion 会下载 Chrome Headless Shell；HyperFrames 编码依赖项目内 FFmpeg。
-
-## 开发与贡献
+如果要使用 Manim：
 
 ```powershell
-npm test                    # registry + typecheck + 全量校验 + 契约测试
-npm run check-agent-harness # 四份 SKILL 内容哈希一致、guide 引用完整
+npm run setup:python
 ```
 
-工作流 skill 的规范源是 `skills/science-video-workflow/SKILL.md`，同步到 `.agents/`、`.claude/`、`.codex/` 三个 harness 目录。修改规范源后运行 `npm run sync-agent-harness-skill`，提交前运行 `npm run check-agent-harness`；四份文件必须完全一致。
+## Production pipeline
 
-贡献流程见 `CONTRIBUTING.md`，安全问题见 `SECURITY.md`，社区规范见 `CODE_OF_CONDUCT.md`。项目使用 `LICENSE` 中的开源许可。
+```text
+brief
+  ↓
+content-plan.md + shot-design.md
+  ↓
+approve-episode
+  ↓
+script / storyboard / visual-style
+  ↓
+ShotBrief + manifest
+  ↓
+hero frames
+  ↓
+HyperFrames / Manim shots
+  ↓
+validate-episode-shots
+  ↓
+prepare-episode-assets
+  ↓
+validate-episode
+  ↓
+Remotion + FFmpeg render
+  ↓
+contact sheet + still-frame QC
+  ↓
+verify-episode-output
+```
+
+### Core commands
+
+| 阶段 | 命令 |
+| --- | --- |
+| 新建 | `npm run create-episode -- <id>` |
+| 批准规划 | `npm run approve-episode -- <id>` |
+| 查看进度 | `npm run episode-status -- <id>` |
+| 校验规划 | `npm run validate-episode-planning -- <id>` |
+| 校验镜头 | `npm run validate-episode-shots -- <id> [--shot <shot-id>]` |
+| 预览镜头 | `npm run preview-episode-shots -- <id> [--shot <shot-id>]` |
+| 渲染镜头 | `npm run render-episode-shots -- <id> [--shot <shot-id>]` |
+| 准备素材 | `npm run prepare-episode-assets -- <id>` |
+| 校验整集 | `npm run validate-episode -- <id>` |
+| 渲染整集 | `npm run render-episode -- <id>` |
+| 生成接触表 | `npm run generate-contact-sheet -- <id>` |
+| 验证输出 | `npm run verify-episode-output -- <id>` |
+| 全量测试 | `npm test` |
+
+## Project structure
+
+```text
+.
+├── content/episodes/<id>/       # episode 计划、剧本、ShotBrief、镜头源码和素材
+│   ├── manifest.ts               # scene、时长、beats、captions
+│   ├── episode.ts                # episode 本地视觉枚举
+│   ├── shot-briefs/              # 逐镜 renderer / 连续性 / 输出契约
+│   ├── html/<shot-id>/           # HyperFrames 浏览器镜头
+│   └── manim/<shot-id>/          # 可选 Manim 镜头
+├── templates/                    # 四套可复制的美术系统镜头模板
+├── src/                          # Remotion 总合成、字幕和电影感叠加层
+├── production/                   # renderer 路由、ShotBrief 契约和合成
+├── scripts/                      # create / validate / preview / render / verify
+├── docs/                         # 工作流、艺术方向、质量与 README 展示资源
+├── skills/                       # AI 制片 playbook
+├── renders/<id>/                 # final.mp4、manifest、接触表和验证结果
+└── static/episodes/<id>/         # 由脚本生成的 Remotion 运行时资源
+```
+
+## Documentation map
+
+- [AI production playbook](skills/science-video-workflow/SKILL.md)
+- [Workflow lifecycle](docs/WORKFLOW.md)
+- [Scene and ShotBrief contract](docs/SCENE_GUIDE.md)
+- [Component boundaries](docs/COMPONENT_GUIDE.md)
+- [Art direction systems](docs/ART_DIRECTION.md)
+- [Quality checklist](docs/QUALITY.md)
+- [Contributing](CONTRIBUTING.md)
+
+## Known limitations
+
+- 当前没有自动配音、配乐或音效生成；旁白以脚本和字幕时间轴存在。
+- 字体优先从 Google Fonts 缓存，离线环境可能回退到本机字体，字宽会有差异。
+- 实际视频渲染主要在 Windows 环境验证；跨平台脚本和 CI 校验已覆盖核心工程契约。
+- Manim 是可选 renderer；Blender 目前只有契约，没有执行器。
+- `check` 和 `validate` 是底线门禁，不能代替首帧、中段、尾帧和接触表的目视审片。
+
+## Development
+
+```powershell
+npm test
+npm run check-agent-harness
+npm run doctor
+```
+
+修改 `skills/science-video-workflow/SKILL.md` 后运行 `npm run sync-agent-harness-skill`，再运行 `npm run check-agent-harness` 确认三个 harness 副本一致。
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## References
+
+- Repository: [sinxy-sai/video-factory](https://github.com/sinxy-sai/video-factory)
+- HyperFrames: [hyperframes.heygen.com](https://hyperframes.heygen.com/)
+- Remotion: [remotion.dev](https://www.remotion.dev/)
+- GSAP: [gsap.com](https://gsap.com/)
+- Manim: [manim.community](https://www.manim.community/)
+- FFmpeg: [ffmpeg.org](https://ffmpeg.org/)

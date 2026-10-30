@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Science Video Factory.
+Thanks for helping improve Video Factory.
 
 ## Development setup
 

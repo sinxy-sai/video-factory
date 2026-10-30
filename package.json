@@ -1,8 +1,8 @@
 {
-  "name": "science-video-factory",
+  "name": "video-factory",
   "version": "0.1.0",
   "private": false,
-  "description": "Manifest-driven science explainer videos with HyperFrames, Manim, Remotion, and FFmpeg.",
+  "description": "Manifest-driven AI-generated videos with HyperFrames, Manim, Remotion, and FFmpeg.",
   "repository": {
     "type": "git",
     "url": "https://github.com/sinxy-sai/video-factory.git"
